@@ -1,0 +1,146 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// ============================================================
+// USERS & AUTH
+// ============================================================
+
+model User {
+  id           String    @id @default(uuid())
+  name         String
+  email        String    @unique
+  passwordHash String
+  role         String    @default("client")
+  isActive     Boolean   @default(true)
+  lastLogin    DateTime?
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  measurements    Measurement[]   @relation("SurveyorMeasurements")
+  retakeHistories RetakeHistory[] @relation("PMRetakes")
+  activityLogs    ActivityLog[]
+  notifications   Notification[]
+}
+
+// ============================================================
+// CORE ENTITIES
+// ============================================================
+
+model TargetPoint {
+  id        Int      @id @default(autoincrement())
+  pointCode String   @unique // e.g., GCP-001, ICP-001
+  pointType String   @default("GCP") // GCP or ICP
+  targetLat Float? // Pre-survey coordinate (if any)
+  targetLng Float? // Pre-survey coordinate (if any)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  measurement Measurement?
+}
+
+model Measurement {
+  id               Int       @id @default(autoincrement())
+  pointCode        String    @unique
+  targetPoint      TargetPoint @relation(fields: [pointCode], references: [pointCode], onDelete: Cascade)
+  
+  surveyorId       String
+  surveyor         User      @relation("SurveyorMeasurements", fields: [surveyorId], references: [id])
+  
+  status           String    @default("unassigned") // unassigned, progress, review, approved, retake
+  assignedAt       DateTime?
+  scheduledDate    String?   // YYYY-MM-DD
+  
+  startTime        DateTime?
+  endTime          DateTime?
+  antennaHeight    Float?
+  conditionSekitar String?
+  weather          String?
+  receiverType     String?
+  fieldNotes       String?
+  
+  photoNorthUrl    String?
+  photoSouthUrl    String?
+  photoEastUrl     String?
+  photoWestUrl     String?
+  rinexFileUrl     String?
+  
+  retakeCount      Int       @default(0)
+  pmNotes          String?   // Catatan PM jika ditolak (retake)
+  
+  // Final Coordinates from PM processing
+  finalUtmX        Float?
+  finalUtmY        Float?
+  finalElevation   Float?
+  finalUtmZone     String?   // e.g., "48S"
+  finalLat         Float?
+  finalLng         Float?
+  
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+
+  retakeHistories  RetakeHistory[]
+}
+
+model RetakeHistory {
+  id               Int         @id @default(autoincrement())
+  measurementId    Int
+  measurement      Measurement @relation(fields: [measurementId], references: [id], onDelete: Cascade)
+  
+  retakeNumber     Int
+  reason           String
+  pmId             String
+  pm               User        @relation("PMRetakes", fields: [pmId], references: [id])
+  
+  // Snapshot data sebelum retake (opsional)
+  oldPhotoNorthUrl String?
+  oldPhotoSouthUrl String?
+  oldPhotoEastUrl  String?
+  oldPhotoWestUrl  String?
+  oldRinexFileUrl  String?
+  
+  createdAt        DateTime    @default(now())
+}
+
+// ============================================================
+// SYSTEM & LOGGING
+// ============================================================
+
+model ActivityLog {
+  id         Int      @id @default(autoincrement())
+  userId     String
+  user       User     @relation(fields: [userId], references: [id])
+  action     String   // e.g., "login", "upload_data", "approve_point"
+  entityType String?  // e.g., "measurement"
+  entityId   Int?     // id dari entitas yang terkait
+  oldValue   String?  // JSON string
+  newValue   String?  // JSON string
+  notes      String?
+  ipAddress  String?
+  createdAt  DateTime @default(now())
+}
+
+model Notification {
+  id        Int      @id @default(autoincrement())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  type      String   // assigned, submitted, approved, retake
+  message   String
+  isRead    Boolean  @default(false)
+  pointCode String?  // Titik yang terkait (jika ada)
+  
+  createdAt DateTime @default(now())
+}
+
+model MapLayer {
+  id        Int      @id @default(autoincrement())
+  name      String
+  geojson   String
+  createdAt DateTime @default(now())
+}

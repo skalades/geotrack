@@ -1,0 +1,2292 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PRD v2.0 — GeoTrack Cikelet App</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap');
+
+    :root {
+      --primary: #1a56db;
+      --primary-dark: #1e40af;
+      --primary-light: #dbeafe;
+      --secondary: #0ea5e9;
+      --accent: #7c3aed;
+      --success: #059669;
+      --success-light: #d1fae5;
+      --warning: #d97706;
+      --warning-light: #fef3c7;
+      --danger: #dc2626;
+      --danger-light: #fee2e2;
+      --neutral-50: #f8fafc;
+      --neutral-100: #f1f5f9;
+      --neutral-200: #e2e8f0;
+      --neutral-300: #cbd5e1;
+      --neutral-400: #94a3b8;
+      --neutral-500: #64748b;
+      --neutral-600: #475569;
+      --neutral-700: #334155;
+      --neutral-800: #1e293b;
+      --neutral-900: #0f172a;
+      --font-main: 'Inter', sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: var(--font-main);
+      font-size: 10.5pt;
+      line-height: 1.65;
+      color: var(--neutral-800);
+      background: white;
+    }
+
+    /* ============ COVER PAGE ============ */
+    .cover {
+      width: 100%;
+      min-height: 297mm;
+      background: linear-gradient(145deg, #0f172a 0%, #1e3a5f 40%, #1a56db 100%);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 60px 70px;
+      page-break-after: always;
+      position: relative;
+      overflow: hidden;
+    }
+    .cover::before {
+      content: '';
+      position: absolute;
+      top: -80px; right: -80px;
+      width: 400px; height: 400px;
+      background: radial-gradient(circle, rgba(14,165,233,0.25) 0%, transparent 70%);
+      border-radius: 50%;
+    }
+    .cover::after {
+      content: '';
+      position: absolute;
+      bottom: 50px; left: -60px;
+      width: 300px; height: 300px;
+      background: radial-gradient(circle, rgba(124,58,237,0.2) 0%, transparent 70%);
+      border-radius: 50%;
+    }
+    .cover-logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .cover-logo-icon {
+      width: 48px; height: 48px;
+      background: linear-gradient(135deg, #0ea5e9, #1a56db);
+      border-radius: 12px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 22px;
+    }
+    .cover-logo-text {
+      color: white;
+      font-size: 20pt;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+    }
+    .cover-logo-sub {
+      color: rgba(255,255,255,0.6);
+      font-size: 9pt;
+      font-weight: 400;
+    }
+    .cover-center {
+      text-align: center;
+      position: relative; z-index: 1;
+    }
+    .cover-badge {
+      display: inline-block;
+      background: rgba(14,165,233,0.25);
+      border: 1px solid rgba(14,165,233,0.5);
+      color: #7dd3fc;
+      font-size: 8pt;
+      font-weight: 600;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      padding: 5px 16px;
+      border-radius: 999px;
+      margin-bottom: 24px;
+    }
+    .cover-title {
+      color: white;
+      font-size: 36pt;
+      font-weight: 800;
+      line-height: 1.1;
+      letter-spacing: -1px;
+      margin-bottom: 8px;
+    }
+    .cover-title span {
+      background: linear-gradient(90deg, #0ea5e9, #7c3aed);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .cover-subtitle {
+      color: rgba(255,255,255,0.7);
+      font-size: 13pt;
+      font-weight: 400;
+      margin-bottom: 48px;
+    }
+    .cover-meta-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr 1fr;
+      gap: 16px;
+      text-align: left;
+    }
+    .cover-meta-item {
+      background: rgba(255,255,255,0.07);
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 12px;
+      padding: 14px 16px;
+    }
+    .cover-meta-label {
+      color: rgba(255,255,255,0.5);
+      font-size: 7.5pt;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 4px;
+    }
+    .cover-meta-value {
+      color: white;
+      font-size: 9.5pt;
+      font-weight: 600;
+    }
+    .cover-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-top: 1px solid rgba(255,255,255,0.1);
+      padding-top: 20px;
+      position: relative; z-index: 1;
+    }
+    .cover-footer-text { color: rgba(255,255,255,0.5); font-size: 8.5pt; }
+    .cover-footer-version {
+      color: rgba(255,255,255,0.7);
+      font-size: 9pt;
+      font-weight: 600;
+      background: rgba(255,255,255,0.1);
+      padding: 4px 12px;
+      border-radius: 6px;
+    }
+
+    /* ============ TOC PAGE ============ */
+    .toc-page {
+      padding: 50px 60px;
+      page-break-after: always;
+    }
+    .toc-header {
+      border-bottom: 3px solid var(--primary);
+      padding-bottom: 16px;
+      margin-bottom: 30px;
+    }
+    .toc-header h2 {
+      font-size: 18pt;
+      font-weight: 700;
+      color: var(--neutral-900);
+    }
+    .toc-section {
+      margin-bottom: 8px;
+    }
+    .toc-item {
+      display: flex;
+      align-items: baseline;
+      gap: 0;
+      margin-bottom: 5px;
+    }
+    .toc-num {
+      color: var(--primary);
+      font-weight: 700;
+      font-size: 10pt;
+      min-width: 40px;
+    }
+    .toc-text {
+      color: var(--neutral-700);
+      font-size: 10pt;
+      font-weight: 500;
+      flex: 1;
+    }
+    .toc-dots {
+      flex: 1;
+      border-bottom: 1.5px dotted var(--neutral-300);
+      margin: 0 8px;
+      margin-bottom: 3px;
+    }
+    .toc-page-num {
+      color: var(--neutral-500);
+      font-size: 9.5pt;
+    }
+    .toc-sub-item {
+      display: flex;
+      align-items: baseline;
+      margin-bottom: 3px;
+      padding-left: 20px;
+    }
+    .toc-sub-num {
+      color: var(--neutral-500);
+      font-size: 9pt;
+      min-width: 40px;
+    }
+    .toc-sub-text {
+      color: var(--neutral-500);
+      font-size: 9pt;
+      flex: 1;
+    }
+    .toc-sub-dots {
+      flex: 1;
+      border-bottom: 1px dotted var(--neutral-200);
+      margin: 0 8px;
+      margin-bottom: 3px;
+    }
+    .toc-sub-page { color: var(--neutral-400); font-size: 9pt; }
+
+    /* ============ CONTENT PAGES ============ */
+    .page {
+      padding: 45px 60px;
+      page-break-after: always;
+      min-height: 255mm;
+      position: relative;
+    }
+    .page:last-child { page-break-after: auto; }
+
+    .page-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 2px solid var(--neutral-200);
+      padding-bottom: 12px;
+      margin-bottom: 28px;
+    }
+    .page-header-left {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .page-header-num {
+      background: var(--primary);
+      color: white;
+      font-size: 8pt;
+      font-weight: 700;
+      padding: 3px 10px;
+      border-radius: 4px;
+    }
+    .page-header-title {
+      color: var(--neutral-600);
+      font-size: 9pt;
+      font-weight: 500;
+    }
+    .page-header-logo {
+      color: var(--neutral-400);
+      font-size: 8.5pt;
+      font-weight: 600;
+    }
+
+    /* ============ TYPOGRAPHY ============ */
+    h1 {
+      font-size: 20pt;
+      font-weight: 800;
+      color: var(--neutral-900);
+      margin-bottom: 8px;
+      line-height: 1.2;
+    }
+    h1 .sec-num {
+      color: var(--primary);
+      margin-right: 6px;
+    }
+    h2 {
+      font-size: 14pt;
+      font-weight: 700;
+      color: var(--neutral-800);
+      margin-top: 24px;
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    h2::before {
+      content: '';
+      display: inline-block;
+      width: 4px;
+      height: 18px;
+      background: var(--primary);
+      border-radius: 2px;
+      flex-shrink: 0;
+    }
+    h3 {
+      font-size: 11pt;
+      font-weight: 700;
+      color: var(--neutral-700);
+      margin-top: 18px;
+      margin-bottom: 8px;
+    }
+    h4 {
+      font-size: 10pt;
+      font-weight: 600;
+      color: var(--neutral-600);
+      margin-top: 12px;
+      margin-bottom: 6px;
+    }
+    p { margin-bottom: 10px; color: var(--neutral-700); }
+    ul, ol {
+      margin-left: 18px;
+      margin-bottom: 10px;
+    }
+    li { margin-bottom: 4px; color: var(--neutral-700); }
+    strong { color: var(--neutral-900); font-weight: 600; }
+
+    .section-intro {
+      background: var(--neutral-50);
+      border-left: 4px solid var(--primary);
+      padding: 12px 16px;
+      border-radius: 0 8px 8px 0;
+      margin-bottom: 20px;
+      color: var(--neutral-600);
+      font-size: 10pt;
+    }
+
+    /* ============ COMPONENTS ============ */
+    .info-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+    .info-card {
+      background: var(--neutral-50);
+      border: 1px solid var(--neutral-200);
+      border-radius: 10px;
+      padding: 14px 16px;
+    }
+    .info-card-label {
+      font-size: 8pt;
+      font-weight: 600;
+      color: var(--neutral-400);
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      margin-bottom: 4px;
+    }
+    .info-card-value {
+      font-size: 10.5pt;
+      font-weight: 600;
+      color: var(--neutral-800);
+    }
+
+    /* Tables */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 16px;
+      font-size: 9.5pt;
+    }
+    thead tr {
+      background: var(--primary);
+      color: white;
+    }
+    thead th {
+      padding: 10px 12px;
+      text-align: left;
+      font-weight: 600;
+      font-size: 9pt;
+    }
+    tbody tr:nth-child(even) { background: var(--neutral-50); }
+    tbody tr:hover { background: var(--primary-light); }
+    tbody td {
+      padding: 9px 12px;
+      border-bottom: 1px solid var(--neutral-200);
+      vertical-align: top;
+    }
+    tbody td:first-child { font-weight: 600; color: var(--neutral-800); }
+
+    /* Badges */
+    .badge {
+      display: inline-block;
+      padding: 2px 10px;
+      border-radius: 999px;
+      font-size: 8pt;
+      font-weight: 600;
+    }
+    .badge-primary { background: var(--primary-light); color: var(--primary-dark); }
+    .badge-success { background: var(--success-light); color: var(--success); }
+    .badge-warning { background: var(--warning-light); color: var(--warning); }
+    .badge-danger { background: var(--danger-light); color: var(--danger); }
+    .badge-purple { background: #f3e8ff; color: #7c3aed; }
+    .badge-gray { background: var(--neutral-100); color: var(--neutral-600); }
+
+    /* Status flow */
+    .status-flow {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex-wrap: wrap;
+      margin: 16px 0;
+      padding: 16px;
+      background: var(--neutral-50);
+      border-radius: 10px;
+      border: 1px solid var(--neutral-200);
+    }
+    .status-box {
+      padding: 7px 14px;
+      border-radius: 8px;
+      font-size: 9pt;
+      font-weight: 600;
+    }
+    .status-unassigned { background: #f1f5f9; color: #475569; border: 1.5px solid #cbd5e1; }
+    .status-progress { background: #fef3c7; color: #92400e; border: 1.5px solid #fcd34d; }
+    .status-review { background: #dbeafe; color: #1e40af; border: 1.5px solid #93c5fd; }
+    .status-approved { background: #d1fae5; color: #065f46; border: 1.5px solid #6ee7b7; }
+    .status-retake { background: #fee2e2; color: #991b1b; border: 1.5px solid #fca5a5; }
+    .arrow { color: var(--neutral-400); font-size: 14pt; font-weight: 300; }
+
+    /* Code block */
+    .code-block {
+      background: var(--neutral-900);
+      color: #e2e8f0;
+      font-family: var(--font-mono);
+      font-size: 8.5pt;
+      padding: 16px 20px;
+      border-radius: 10px;
+      margin: 12px 0;
+      overflow: hidden;
+      line-height: 1.6;
+    }
+    .code-comment { color: #6b7280; }
+    .code-keyword { color: #818cf8; }
+    .code-string { color: #86efac; }
+    .code-type { color: #67e8f9; }
+    .code-num { color: #fb923c; }
+
+    /* Feature cards */
+    .feature-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin: 12px 0;
+    }
+    .feature-card {
+      background: white;
+      border: 1.5px solid var(--neutral-200);
+      border-radius: 10px;
+      padding: 14px 16px;
+    }
+    .feature-card-header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 8px;
+    }
+    .feature-icon {
+      width: 32px; height: 32px;
+      border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 14px;
+      flex-shrink: 0;
+    }
+    .icon-blue { background: var(--primary-light); }
+    .icon-green { background: var(--success-light); }
+    .icon-yellow { background: var(--warning-light); }
+    .icon-purple { background: #f3e8ff; }
+    .icon-red { background: var(--danger-light); }
+    .icon-cyan { background: #e0f2fe; }
+
+    .feature-card-title {
+      font-size: 10pt;
+      font-weight: 700;
+      color: var(--neutral-800);
+    }
+    .feature-card p {
+      font-size: 9pt;
+      color: var(--neutral-500);
+      margin: 0;
+    }
+
+    /* Alert boxes */
+    .alert {
+      padding: 12px 16px;
+      border-radius: 8px;
+      margin: 12px 0;
+      display: flex;
+      gap: 10px;
+    }
+    .alert-icon { font-size: 14px; flex-shrink: 0; margin-top: 1px; }
+    .alert-content { flex: 1; }
+    .alert-title { font-weight: 700; font-size: 9.5pt; margin-bottom: 2px; }
+    .alert-text { font-size: 9pt; }
+    .alert-info { background: #dbeafe; border-left: 4px solid var(--primary); }
+    .alert-info .alert-title { color: #1e40af; }
+    .alert-info .alert-text { color: #1e40af; }
+    .alert-warning { background: #fef3c7; border-left: 4px solid #f59e0b; }
+    .alert-warning .alert-title { color: #92400e; }
+    .alert-warning .alert-text { color: #78350f; }
+    .alert-success { background: #d1fae5; border-left: 4px solid #10b981; }
+    .alert-success .alert-title { color: #065f46; }
+    .alert-success .alert-text { color: #065f46; }
+    .alert-danger { background: #fee2e2; border-left: 4px solid #ef4444; }
+    .alert-danger .alert-title { color: #991b1b; }
+    .alert-danger .alert-text { color: #7f1d1d; }
+
+    /* Mobile UI mockup */
+    .mobile-frame {
+      display: inline-block;
+      background: #1e293b;
+      border-radius: 24px;
+      padding: 12px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+    }
+    .mobile-screen {
+      width: 180px;
+      background: white;
+      border-radius: 16px;
+      overflow: hidden;
+    }
+    .mobile-topbar {
+      background: var(--primary);
+      color: white;
+      padding: 10px 12px 8px;
+      font-size: 8pt;
+      font-weight: 700;
+    }
+    .mobile-content { padding: 10px 12px; }
+    .mobile-bottomnav {
+      display: flex;
+      background: white;
+      border-top: 1px solid #e2e8f0;
+      padding: 6px 0;
+    }
+    .mobile-nav-item {
+      flex: 1;
+      text-align: center;
+      font-size: 6pt;
+      color: #94a3b8;
+      padding: 2px 0;
+    }
+    .mobile-nav-item.active { color: var(--primary); font-weight: 600; }
+    .mobile-nav-icon { font-size: 12px; display: block; }
+
+    /* Phase roadmap */
+    .phase-card {
+      background: white;
+      border: 1.5px solid var(--neutral-200);
+      border-radius: 12px;
+      padding: 16px 18px;
+      margin-bottom: 12px;
+      display: flex;
+      gap: 16px;
+      align-items: flex-start;
+    }
+    .phase-num {
+      width: 40px; height: 40px;
+      border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 14pt;
+      font-weight: 800;
+      flex-shrink: 0;
+    }
+    .phase-1 .phase-num { background: #dbeafe; color: var(--primary); }
+    .phase-2 .phase-num { background: #d1fae5; color: var(--success); }
+    .phase-3 .phase-num { background: #f3e8ff; color: var(--accent); }
+    .phase-title { font-size: 11pt; font-weight: 700; color: var(--neutral-800); margin-bottom: 4px; }
+    .phase-sub { font-size: 8.5pt; color: var(--neutral-500); margin-bottom: 8px; }
+    .phase-tags { display: flex; flex-wrap: wrap; gap: 5px; }
+    .phase-tag {
+      background: var(--neutral-100);
+      color: var(--neutral-600);
+      font-size: 7.5pt;
+      font-weight: 500;
+      padding: 2px 8px;
+      border-radius: 4px;
+    }
+
+    /* DB schema mini */
+    .db-table {
+      background: white;
+      border: 1.5px solid var(--neutral-200);
+      border-radius: 10px;
+      overflow: hidden;
+      margin-bottom: 14px;
+    }
+    .db-table-header {
+      background: var(--neutral-800);
+      color: white;
+      padding: 8px 14px;
+      font-size: 9pt;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .db-table-row {
+      display: flex;
+      padding: 7px 14px;
+      border-bottom: 1px solid var(--neutral-100);
+      font-size: 8.5pt;
+      align-items: center;
+    }
+    .db-table-row:last-child { border-bottom: none; }
+    .db-col-name { font-family: var(--font-mono); color: var(--primary-dark); font-weight: 600; min-width: 160px; }
+    .db-col-type { color: var(--success); font-family: var(--font-mono); min-width: 120px; }
+    .db-col-desc { color: var(--neutral-500); }
+    .db-pk { background: #fef3c7; color: #92400e; font-size: 6.5pt; font-weight: 700; padding: 1px 5px; border-radius: 3px; margin-left: 5px; }
+    .db-fk { background: #dbeafe; color: #1e40af; font-size: 6.5pt; font-weight: 700; padding: 1px 5px; border-radius: 3px; margin-left: 5px; }
+    .db-nn { background: #fee2e2; color: #991b1b; font-size: 6.5pt; font-weight: 700; padding: 1px 5px; border-radius: 3px; margin-left: 5px; }
+
+    /* Access matrix check/x */
+    .check { color: var(--success); font-weight: 700; }
+    .cross { color: var(--danger); font-weight: 700; }
+    .partial { color: var(--warning); font-weight: 700; }
+
+    /* Architecture diagram */
+    .arch-layer {
+      background: var(--neutral-50);
+      border: 1.5px solid var(--neutral-200);
+      border-radius: 10px;
+      padding: 14px 18px;
+      margin-bottom: 10px;
+    }
+    .arch-layer-title {
+      font-size: 8pt;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--neutral-500);
+      margin-bottom: 8px;
+    }
+    .arch-items {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .arch-item {
+      background: white;
+      border: 1px solid var(--neutral-200);
+      border-radius: 6px;
+      padding: 6px 12px;
+      font-size: 9pt;
+      font-weight: 600;
+      color: var(--neutral-700);
+    }
+    .arch-item-primary { border-color: var(--primary); color: var(--primary); background: var(--primary-light); }
+    .arch-item-success { border-color: var(--success); color: var(--success); background: var(--success-light); }
+    .arch-item-accent { border-color: var(--accent); color: var(--accent); background: #f3e8ff; }
+    .arch-item-warning { border-color: var(--warning); color: var(--warning); background: var(--warning-light); }
+
+    /* API table */
+    .api-method {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-family: var(--font-mono);
+      font-size: 8pt;
+      font-weight: 700;
+    }
+    .method-get { background: #d1fae5; color: #065f46; }
+    .method-post { background: #dbeafe; color: #1e40af; }
+    .method-put { background: #fef3c7; color: #92400e; }
+    .method-delete { background: #fee2e2; color: #991b1b; }
+    .method-patch { background: #f3e8ff; color: #6d28d9; }
+
+    /* Page footer */
+    .page-footer {
+      position: absolute;
+      bottom: 20px;
+      left: 60px;
+      right: 60px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-top: 1px solid var(--neutral-200);
+      padding-top: 8px;
+      font-size: 7.5pt;
+      color: var(--neutral-400);
+    }
+
+    /* Print rules */
+    @media print {
+      body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+      .cover { min-height: 100vh; }
+    }
+
+    .divider {
+      height: 1px;
+      background: var(--neutral-200);
+      margin: 20px 0;
+    }
+
+    .two-col {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      margin: 12px 0;
+    }
+    .three-col {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 14px;
+      margin: 12px 0;
+    }
+
+    .highlight-box {
+      background: linear-gradient(135deg, #dbeafe, #e0f2fe);
+      border: 1px solid #93c5fd;
+      border-radius: 10px;
+      padding: 14px 18px;
+      margin: 12px 0;
+    }
+    .highlight-box strong { color: var(--primary-dark); }
+
+    .numbered-list {
+      counter-reset: item;
+      list-style: none;
+      margin-left: 0;
+    }
+    .numbered-list li {
+      counter-increment: item;
+      display: flex;
+      gap: 10px;
+      margin-bottom: 8px;
+      align-items: flex-start;
+    }
+    .numbered-list li::before {
+      content: counter(item);
+      background: var(--primary);
+      color: white;
+      font-size: 8pt;
+      font-weight: 700;
+      min-width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+  </style>
+</head>
+<body>
+
+<!-- ================================================================ -->
+<!-- COVER PAGE                                                        -->
+<!-- ================================================================ -->
+<div class="cover">
+  <div class="cover-logo">
+    <div class="cover-logo-icon">🌐</div>
+    <div>
+      <div class="cover-logo-text">GeoTrack</div>
+      <div class="cover-logo-sub">Cikelet · Garut Selatan</div>
+    </div>
+  </div>
+
+  <div class="cover-center">
+    <div class="cover-badge">Product Requirement Document · v2.0</div>
+    <div class="cover-title">
+      GeoTrack<br/><span>Cikelet App</span>
+    </div>
+    <div class="cover-subtitle">
+      GCP/ICP Monitoring &amp; Documentation System<br/>
+      GNSS Statis · Multi-Level User · Mobile-First · PWA
+    </div>
+    <div class="cover-meta-grid">
+      <div class="cover-meta-item">
+        <div class="cover-meta-label">Nama Produk</div>
+        <div class="cover-meta-value">GeoTrack Cikelet App</div>
+      </div>
+      <div class="cover-meta-item">
+        <div class="cover-meta-label">Versi Dokumen</div>
+        <div class="cover-meta-value">v2.0 — Enhanced PRD</div>
+      </div>
+      <div class="cover-meta-item">
+        <div class="cover-meta-label">Status</div>
+        <div class="cover-meta-value">Final — Siap Dikembangkan</div>
+      </div>
+      <div class="cover-meta-item">
+        <div class="cover-meta-label">Tanggal</div>
+        <div class="cover-meta-value">03 Juli 2026</div>
+      </div>
+      <div class="cover-meta-item">
+        <div class="cover-meta-label">Lokasi Proyek</div>
+        <div class="cover-meta-value">Cikelet, Garut Selatan</div>
+      </div>
+      <div class="cover-meta-item">
+        <div class="cover-meta-label">Total Target Titik</div>
+        <div class="cover-meta-value">200 GCP/ICP</div>
+      </div>
+      <div class="cover-meta-item">
+        <div class="cover-meta-label">Metode Survei</div>
+        <div class="cover-meta-value">GNSS Statis</div>
+      </div>
+      <div class="cover-meta-item">
+        <div class="cover-meta-label">Penulis</div>
+        <div class="cover-meta-value">herdi pebryana</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="cover-footer">
+    <span class="cover-footer-text">Dokumen ini bersifat KONFIDENSIAL — Hanya untuk keperluan internal pengembangan</span>
+    <span class="cover-footer-version">PRD v2.0 · 2026</span>
+  </div>
+</div>
+
+<!-- ================================================================ -->
+<!-- TABLE OF CONTENTS                                                 -->
+<!-- ================================================================ -->
+<div class="toc-page">
+  <div class="toc-header">
+    <h2>📚 Daftar Isi</h2>
+  </div>
+
+  <div class="toc-section">
+    <div class="toc-item">
+      <span class="toc-num">1.</span>
+      <span class="toc-text">Latar Belakang &amp; Tujuan</span>
+      <span class="toc-dots"></span>
+      <span class="toc-page-num">3</span>
+    </div>
+    <div class="toc-sub-item">
+      <span class="toc-sub-num">1.1</span>
+      <span class="toc-sub-text">Latar Belakang Proyek</span>
+      <span class="toc-sub-dots"></span>
+      <span class="toc-sub-page">3</span>
+    </div>
+    <div class="toc-sub-item">
+      <span class="toc-sub-num">1.2</span>
+      <span class="toc-sub-text">Tujuan &amp; Sasaran Sistem</span>
+      <span class="toc-sub-dots"></span>
+      <span class="toc-sub-page">3</span>
+    </div>
+    <div class="toc-sub-item">
+      <span class="toc-sub-num">1.3</span>
+      <span class="toc-sub-text">Scope &amp; Batasan</span>
+      <span class="toc-sub-dots"></span>
+      <span class="toc-sub-page">3</span>
+    </div>
+  </div>
+
+  <div class="toc-section">
+    <div class="toc-item">
+      <span class="toc-num">2.</span>
+      <span class="toc-text">Pengguna &amp; Hak Akses (RBAC)</span>
+      <span class="toc-dots"></span>
+      <span class="toc-page-num">4</span>
+    </div>
+    <div class="toc-sub-item">
+      <span class="toc-sub-num">2.1</span>
+      <span class="toc-sub-text">Definisi Peran Pengguna</span>
+      <span class="toc-sub-dots"></span>
+      <span class="toc-sub-page">4</span>
+    </div>
+    <div class="toc-sub-item">
+      <span class="toc-sub-num">2.2</span>
+      <span class="toc-sub-text">Matriks Hak Akses</span>
+      <span class="toc-sub-dots"></span>
+      <span class="toc-sub-page">4</span>
+    </div>
+    <div class="toc-sub-item">
+      <span class="toc-sub-num">2.3</span>
+      <span class="toc-sub-text">Sistem Autentikasi</span>
+      <span class="toc-sub-dots"></span>
+      <span class="toc-sub-page">4</span>
+    </div>
+  </div>
+
+  <div class="toc-section">
+    <div class="toc-item">
+      <span class="toc-num">3.</span>
+      <span class="toc-text">Fitur Utama &amp; Alur Kerja</span>
+      <span class="toc-dots"></span>
+      <span class="toc-page-num">5</span>
+    </div>
+    <div class="toc-sub-item">
+      <span class="toc-sub-num">3.1</span>
+      <span class="toc-sub-text">Siklus Hidup Status Titik</span>
+      <span class="toc-sub-dots"></span>
+      <span class="toc-sub-page">5</span>
+    </div>
+    <div class="toc-sub-item">
+      <span class="toc-sub-num">3.2</span>
+      <span class="toc-sub-text">Dashboard &amp; Analitik</span>
+      <span class="toc-sub-dots"></span>
+      <span class="toc-sub-page">5</span>
+    </div>
+    <div class="toc-sub-item">
+      <span class="toc-sub-num">3.3</span>
+      <span class="toc-sub-text">Manajemen Target &amp; Penugasan</span>
+      <span class="toc-sub-dots"></span>
+      <span class="toc-sub-page">5</span>
+    </div>
+    <div class="toc-sub-item">
+      <span class="toc-sub-num">3.4</span>
+      <span class="toc-sub-text">Form Input Lapangan (Mobile-First)</span>
+      <span class="toc-sub-dots"></span>
+      <span class="toc-sub-page">6</span>
+    </div>
+    <div class="toc-sub-item">
+      <span class="toc-sub-num">3.5</span>
+      <span class="toc-sub-text">Upload 4 Foto Mata Angin + Validasi EXIF</span>
+      <span class="toc-sub-dots"></span>
+      <span class="toc-sub-page">6</span>
+    </div>
+    <div class="toc-sub-item">
+      <span class="toc-sub-num">3.6</span>
+      <span class="toc-sub-text">Alur Validasi &amp; Retake</span>
+      <span class="toc-sub-dots"></span>
+      <span class="toc-sub-page">7</span>
+    </div>
+    <div class="toc-sub-item">
+      <span class="toc-sub-num">3.7</span>
+      <span class="toc-sub-text">Tampilan Peta Interaktif (GIS View)</span>
+      <span class="toc-sub-dots"></span>
+      <span class="toc-sub-page">7</span>
+    </div>
+    <div class="toc-sub-item">
+      <span class="toc-sub-num">3.8</span>
+      <span class="toc-sub-text">Sistem Notifikasi</span>
+      <span class="toc-sub-dots"></span>
+      <span class="toc-sub-page">7</span>
+    </div>
+    <div class="toc-sub-item">
+      <span class="toc-sub-num">3.9</span>
+      <span class="toc-sub-text">Ekspor Laporan &amp; Download RINEX</span>
+      <span class="toc-sub-dots"></span>
+      <span class="toc-sub-page">8</span>
+    </div>
+    <div class="toc-sub-item">
+      <span class="toc-sub-num">3.10</span>
+      <span class="toc-sub-text">Audit Log &amp; Riwayat Aktivitas</span>
+      <span class="toc-sub-dots"></span>
+      <span class="toc-sub-page">8</span>
+    </div>
+  </div>
+
+  <div class="toc-section">
+    <div class="toc-item">
+      <span class="toc-num">4.</span>
+      <span class="toc-text">Desain UI/UX — Surveyor Mobile-First</span>
+      <span class="toc-dots"></span>
+      <span class="toc-page-num">9</span>
+    </div>
+    <div class="toc-sub-item">
+      <span class="toc-sub-num">4.1</span>
+      <span class="toc-sub-text">Prinsip Desain</span>
+      <span class="toc-sub-dots"></span>
+      <span class="toc-sub-page">9</span>
+    </div>
+    <div class="toc-sub-item">
+      <span class="toc-sub-num">4.2</span>
+      <span class="toc-sub-text">Struktur Navigasi Bottom Navigation</span>
+      <span class="toc-sub-dots"></span>
+      <span class="toc-sub-page">9</span>
+    </div>
+    <div class="toc-sub-item">
+      <span class="toc-sub-num">4.3</span>
+      <span class="toc-sub-text">Halaman-Halaman Utama Surveyor</span>
+      <span class="toc-sub-dots"></span>
+      <span class="toc-sub-page">9</span>
+    </div>
+  </div>
+
+  <div class="toc-section">
+    <div class="toc-item">
+      <span class="toc-num">5.</span>
+      <span class="toc-text">Kebutuhan Non-Fungsional</span>
+      <span class="toc-dots"></span>
+      <span class="toc-page-num">10</span>
+    </div>
+  </div>
+
+  <div class="toc-section">
+    <div class="toc-item">
+      <span class="toc-num">6.</span>
+      <span class="toc-text">Arsitektur Teknis &amp; Tech Stack</span>
+      <span class="toc-dots"></span>
+      <span class="toc-page-num">11</span>
+    </div>
+  </div>
+
+  <div class="toc-section">
+    <div class="toc-item">
+      <span class="toc-num">7.</span>
+      <span class="toc-text">Skema Database Lengkap</span>
+      <span class="toc-dots"></span>
+      <span class="toc-page-num">12</span>
+    </div>
+  </div>
+
+  <div class="toc-section">
+    <div class="toc-item">
+      <span class="toc-num">8.</span>
+      <span class="toc-text">Spesifikasi API</span>
+      <span class="toc-dots"></span>
+      <span class="toc-page-num">13</span>
+    </div>
+  </div>
+
+  <div class="toc-section">
+    <div class="toc-item">
+      <span class="toc-num">9.</span>
+      <span class="toc-text">Keamanan (Security Requirements)</span>
+      <span class="toc-dots"></span>
+      <span class="toc-page-num">14</span>
+    </div>
+  </div>
+
+  <div class="toc-section">
+    <div class="toc-item">
+      <span class="toc-num">10.</span>
+      <span class="toc-text">Roadmap Pengembangan</span>
+      <span class="toc-dots"></span>
+      <span class="toc-page-num">15</span>
+    </div>
+  </div>
+</div>
+
+<!-- ================================================================ -->
+<!-- SECTION 1 — LATAR BELAKANG                                        -->
+<!-- ================================================================ -->
+<div class="page">
+  <div class="page-header">
+    <div class="page-header-left">
+      <span class="page-header-num">01</span>
+      <span class="page-header-title">Latar Belakang &amp; Tujuan</span>
+    </div>
+    <span class="page-header-logo">GeoTrack Cikelet PRD v2.0</span>
+  </div>
+
+  <h1><span class="sec-num">1.</span>Latar Belakang &amp; Tujuan</h1>
+  <div class="section-intro">
+    Dokumen ini adalah versi revisi dan peningkatan dari PRD v1.0. Berisi spesifikasi lengkap sistem GeoTrack Cikelet mencakup seluruh fitur fungsional, non-fungsional, arsitektur teknis, skema database, API specification, dan roadmap pengembangan.
+  </div>
+
+  <h2>1.1 Latar Belakang Proyek</h2>
+  <p>
+    Proyek pengukuran <strong>200 titik GCP/ICP (Ground Control Point / Independent Check Point)</strong> menggunakan metode <strong>GNSS Statis</strong> di wilayah Cikelet, Garut Selatan menghadapi tantangan utama berupa:
+  </p>
+  <div class="feature-grid">
+    <div class="feature-card">
+      <div class="feature-card-header">
+        <div class="feature-icon icon-red">🌳</div>
+        <div class="feature-card-title">Halangan Tajuk Pohon</div>
+      </div>
+      <p>Risiko data Float akibat canopy ekstrem yang mengganggu sinyal GNSS, memerlukan validasi visual kondisi langit di lapangan.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-card-header">
+        <div class="feature-icon icon-yellow">📡</div>
+        <div class="feature-card-title">Area Blank Spot</div>
+      </div>
+      <p>Wilayah Cikelet pedalaman rentan kehilangan sinyal internet, mengharuskan kemampuan kerja offline pada aplikasi lapangan.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-card-header">
+        <div class="feature-icon icon-blue">👥</div>
+        <div class="feature-card-title">Koordinasi Tim</div>
+      </div>
+      <p>Sinkronisasi antara Project Manager, tim surveyor lapangan, dan klien membutuhkan platform terpusat dan real-time.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-card-header">
+        <div class="feature-icon icon-purple">📋</div>
+        <div class="feature-card-title">Dokumentasi QC</div>
+      </div>
+      <p>Standar Quality Control membutuhkan dokumentasi foto dari 4 mata arah angin di setiap titik pengukuran.</p>
+    </div>
+  </div>
+
+  <h2>1.2 Tujuan &amp; Sasaran Sistem</h2>
+  <ul class="numbered-list">
+    <li>Memantau progres harian 200 titik pengukuran secara <strong>real-time dan dinamis</strong> dengan dashboard visual interaktif.</li>
+    <li>Menyediakan wadah dokumentasi visual titik pengukuran dari <strong>4 mata arah angin</strong> dengan validasi metadata EXIF otomatis untuk keperluan Quality Control (QC).</li>
+    <li>Menerapkan <strong>Role-Based Access Control (RBAC)</strong> dengan 3 level pengguna yang memiliki hak akses berbeda sesuai peran kerja.</li>
+    <li>Mendukung <strong>operasi offline (PWA)</strong> untuk surveyor di area tanpa sinyal dengan sinkronisasi otomatis saat ada koneksi.</li>
+    <li>Meminimalkan risiko <em>kecurangan data</em> melalui validasi EXIF koordinat GPS dan timestamp pada setiap foto yang diupload.</li>
+    <li>Menyediakan <strong>tampilan peta interaktif</strong> untuk visualisasi distribusi dan status 200 titik GCP/ICP secara spasial.</li>
+    <li>Menyediakan sistem <strong>ekspor laporan</strong> dalam format PDF, Excel/CSV, dan file RINEX untuk kebutuhan klien dan manajemen.</li>
+  </ul>
+
+  <h2>1.3 Scope &amp; Batasan</h2>
+  <div class="two-col">
+    <div>
+      <h4>✅ Dalam Scope</h4>
+      <ul>
+        <li>Web Application (desktop) untuk PM &amp; Admin</li>
+        <li>Progressive Web App (mobile) untuk Surveyor</li>
+        <li>Dashboard monitoring &amp; analitik</li>
+        <li>Form input data lapangan</li>
+        <li>Upload foto 4 arah + RINEX file</li>
+        <li>Validasi &amp; persetujuan PM</li>
+        <li>Tampilan peta (Map View)</li>
+        <li>Sistem notifikasi in-app</li>
+        <li>Export PDF/Excel/CSV/RINEX</li>
+        <li>Audit log &amp; riwayat aktivitas</li>
+      </ul>
+    </div>
+    <div>
+      <h4>❌ Di Luar Scope (v1.0)</h4>
+      <ul>
+        <li>Pemrosesan data GNSS / post-processing</li>
+        <li>Integrasi dengan software survei (Trimble, Leica)</li>
+        <li>Analisis akurasi koordinat otomatis</li>
+        <li>Mobile native app (Android/iOS)</li>
+        <li>Integrasi dengan sistem GIS enterprise</li>
+        <li>Billing / invoice management</li>
+        <li>Multi-proyek dalam satu instance</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="page-footer">
+    <span>GeoTrack Cikelet App · PRD v2.0 · KONFIDENSIAL</span>
+    <span>Halaman 3</span>
+  </div>
+</div>
+
+<!-- ================================================================ -->
+<!-- SECTION 2 — USER & RBAC                                          -->
+<!-- ================================================================ -->
+<div class="page">
+  <div class="page-header">
+    <div class="page-header-left">
+      <span class="page-header-num">02</span>
+      <span class="page-header-title">Pengguna &amp; Hak Akses (RBAC)</span>
+    </div>
+    <span class="page-header-logo">GeoTrack Cikelet PRD v2.0</span>
+  </div>
+
+  <h1><span class="sec-num">2.</span>Pengguna &amp; Hak Akses</h1>
+
+  <h2>2.1 Definisi Peran Pengguna</h2>
+  <div class="three-col">
+    <div class="feature-card">
+      <div class="feature-card-header">
+        <div class="feature-icon icon-purple">👑</div>
+        <div class="feature-card-title">Super Admin</div>
+      </div>
+      <p><strong>Project Manager</strong></p>
+      <p>Mengontrol seluruh operasi proyek, validasi data, manajemen tim surveyor, dan akses penuh ke semua fitur.</p>
+      <br/><span class="badge badge-purple">Antarmuka: Web Desktop</span>
+    </div>
+    <div class="feature-card">
+      <div class="feature-card-header">
+        <div class="feature-icon icon-blue">🧭</div>
+        <div class="feature-card-title">Surveyor</div>
+      </div>
+      <p><strong>Tim Lapangan</strong></p>
+      <p>Melakukan pengukuran di lapangan, mengisi form data titik, upload foto 4 arah dan file RINEX hasil observasi.</p>
+      <br/><span class="badge badge-primary">Antarmuka: Mobile PWA</span>
+    </div>
+    <div class="feature-card">
+      <div class="feature-card-header">
+        <div class="feature-icon icon-green">🏢</div>
+        <div class="feature-card-title">Client / Viewer</div>
+      </div>
+      <p><strong>Perusahaan Pemberi Kerja</strong></p>
+      <p>Memantau progres proyek secara read-only, melihat laporan, dan mengunduh file RINEX &amp; laporan PDF.</p>
+      <br/><span class="badge badge-success">Antarmuka: Web Desktop</span>
+    </div>
+  </div>
+
+  <h2>2.2 Matriks Hak Akses Lengkap</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>Fitur / Modul</th>
+        <th>Super Admin (PM)</th>
+        <th>Surveyor (Field)</th>
+        <th>Client (Viewer)</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td>Login &amp; Autentikasi</td><td><span class="check">✔</span> Semua Role</td><td><span class="check">✔</span> Semua Role</td><td><span class="check">✔</span> Semua Role</td></tr>
+      <tr><td>Dashboard Ringkasan Progres</td><td><span class="check">✔</span> Lihat &amp; Edit</td><td><span class="check">✔</span> Lihat (titik miliknya)</td><td><span class="check">✔</span> Lihat Hanya Baca</td></tr>
+      <tr><td>Tampilan Peta Interaktif</td><td><span class="check">✔</span> Akses Penuh</td><td><span class="check">✔</span> Lihat titik sendiri</td><td><span class="check">✔</span> Lihat Semua</td></tr>
+      <tr><td>Manajemen Target Titik (CRUD)</td><td><span class="check">✔</span> Create/Read/Update/Delete</td><td><span class="cross">✘</span> Tidak Bisa</td><td><span class="cross">✘</span> Tidak Bisa</td></tr>
+      <tr><td>Penugasan Titik ke Surveyor</td><td><span class="check">✔</span> Akses Penuh</td><td><span class="cross">✘</span> Tidak Bisa</td><td><span class="cross">✘</span> Tidak Bisa</td></tr>
+      <tr><td>Manajemen Akun Pengguna</td><td><span class="check">✔</span> Akses Penuh</td><td><span class="cross">✘</span> Tidak Bisa</td><td><span class="cross">✘</span> Tidak Bisa</td></tr>
+      <tr><td>Form Input &amp; Upload Dokumentasi</td><td><span class="check">✔</span> Akses Penuh</td><td><span class="check">✔</span> Akses Penuh (titik miliknya)</td><td><span class="cross">✘</span> Tidak Bisa</td></tr>
+      <tr><td>Validasi Status (Approve/Retake)</td><td><span class="check">✔</span> Akses Penuh</td><td><span class="cross">✘</span> Tidak Bisa</td><td><span class="cross">✘</span> Tidak Bisa</td></tr>
+      <tr><td>Lihat Foto &amp; Detail Titik</td><td><span class="check">✔</span> Semua Titik</td><td><span class="check">✔</span> Titik miliknya saja</td><td><span class="check">✔</span> Semua (Approved)</td></tr>
+      <tr><td>Ekspor Data (Excel/CSV)</td><td><span class="check">✔</span> Akses Penuh</td><td><span class="cross">✘</span> Tidak Bisa</td><td><span class="partial">◑</span> Terbatas</td></tr>
+      <tr><td>Download RINEX File</td><td><span class="check">✔</span> Akses Penuh</td><td><span class="cross">✘</span> Tidak Bisa</td><td><span class="check">✔</span> Lihat &amp; Download</td></tr>
+      <tr><td>Ekspor Laporan PDF</td><td><span class="check">✔</span> Akses Penuh</td><td><span class="cross">✘</span> Tidak Bisa</td><td><span class="check">✔</span> Lihat &amp; Download</td></tr>
+      <tr><td>Lihat Audit Log</td><td><span class="check">✔</span> Akses Penuh</td><td><span class="cross">✘</span> Tidak Bisa</td><td><span class="cross">✘</span> Tidak Bisa</td></tr>
+      <tr><td>Terima Notifikasi</td><td><span class="check">✔</span> Semua Event</td><td><span class="check">✔</span> Assign &amp; Retake</td><td><span class="partial">◑</span> Update Progres</td></tr>
+    </tbody>
+  </table>
+
+  <h2>2.3 Sistem Autentikasi</h2>
+  <div class="two-col">
+    <div>
+      <h4>Alur Login</h4>
+      <ul>
+        <li>Login via email + password</li>
+        <li>JWT Token (access + refresh token)</li>
+        <li>Access token: expire 8 jam</li>
+        <li>Refresh token: expire 30 hari</li>
+        <li>Auto-logout saat token expire</li>
+        <li>Remember me (persistent login)</li>
+      </ul>
+    </div>
+    <div>
+      <h4>Manajemen Akun</h4>
+      <ul>
+        <li>Akun surveyor dibuat oleh Super Admin</li>
+        <li>Registrasi mandiri tidak tersedia</li>
+        <li>Reset password via email link</li>
+        <li>Deaktivasi akun tanpa hapus data</li>
+        <li>Satu akun satu role (tidak bisa multi-role)</li>
+        <li>Password minimal 8 karakter + angka</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="page-footer">
+    <span>GeoTrack Cikelet App · PRD v2.0 · KONFIDENSIAL</span>
+    <span>Halaman 4</span>
+  </div>
+</div>
+
+<!-- ================================================================ -->
+<!-- SECTION 3.1 — 3.5 FITUR UTAMA                                    -->
+<!-- ================================================================ -->
+<div class="page">
+  <div class="page-header">
+    <div class="page-header-left">
+      <span class="page-header-num">03</span>
+      <span class="page-header-title">Fitur Utama &amp; Alur Kerja</span>
+    </div>
+    <span class="page-header-logo">GeoTrack Cikelet PRD v2.0</span>
+  </div>
+
+  <h1><span class="sec-num">3.</span>Fitur Utama &amp; Alur Kerja</h1>
+
+  <h2>3.1 Siklus Hidup Status Titik Pengukuran</h2>
+  <p>Setiap titik dari total 200 target GCP/ICP memiliki status dinamis yang berubah otomatis berdasarkan aksi pengguna:</p>
+  <div class="status-flow">
+    <div class="status-box status-unassigned">🔵 Unassigned</div>
+    <span class="arrow">→</span>
+    <div class="status-box status-progress">🟡 In Progress / Terjadwal</div>
+    <span class="arrow">→</span>
+    <div class="status-box status-review">🔵 Under Review</div>
+    <span class="arrow">→</span>
+    <div class="status-box status-approved">🟢 Approved</div>
+    <span class="arrow">⟵ atau ⟶</span>
+    <div class="status-box status-retake">🔴 Retake</div>
+  </div>
+
+  <table>
+    <thead><tr><th>Status</th><th>Trigger</th><th>Aktor</th><th>Aksi Selanjutnya</th></tr></thead>
+    <tbody>
+      <tr><td><span class="badge badge-gray">Unassigned</span></td><td>Titik baru ditambahkan ke sistem</td><td>System / PM</td><td>PM assign ke Surveyor</td></tr>
+      <tr><td><span class="badge badge-warning">In Progress</span></td><td>PM assign titik ke surveyor</td><td>PM</td><td>Surveyor mengisi &amp; submit form</td></tr>
+      <tr><td><span class="badge badge-primary">Under Review</span></td><td>Surveyor submit form lengkap</td><td>Surveyor</td><td>PM approve atau retake</td></tr>
+      <tr><td><span class="badge badge-success">Approved</span></td><td>PM validasi &amp; setujui data</td><td>PM</td><td>Data final, bisa dieksport</td></tr>
+      <tr><td><span class="badge badge-danger">Retake</span></td><td>PM tolak data, minta pengukuran ulang</td><td>PM</td><td>Kembali ke In Progress, surveyor upload ulang</td></tr>
+    </tbody>
+  </table>
+
+  <h2>3.2 Dashboard &amp; Analitik</h2>
+  <p>Dashboard berbeda per role, menampilkan informasi yang relevan dengan pekerjaan masing-masing:</p>
+
+  <h4>Dashboard Super Admin (PM) — Web Desktop</h4>
+  <div class="feature-grid">
+    <div class="feature-card">
+      <div class="feature-card-header">
+        <div class="feature-icon icon-blue">📊</div>
+        <div class="feature-card-title">Kartu Statistik Ringkasan</div>
+      </div>
+      <p>Total titik, Approved, In Progress, Retake, Unassigned. Persentase progres keseluruhan dengan progress ring.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-card-header">
+        <div class="feature-icon icon-green">📈</div>
+        <div class="feature-card-title">Grafik Progres Harian</div>
+      </div>
+      <p>Line chart jumlah titik approved per hari. Dapat difilter per minggu / bulan. Menampilkan target harian.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-card-header">
+        <div class="feature-icon icon-purple">👤</div>
+        <div class="feature-card-title">Progres per Surveyor</div>
+      </div>
+      <p>Bar chart perbandingan produktivitas antar surveyor. Total submit, approve rate, rata-rata waktu pengerjaan.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-card-header">
+        <div class="feature-icon icon-yellow">⏰</div>
+        <div class="feature-card-title">Antrean Review</div>
+      </div>
+      <p>Daftar titik dengan status "Under Review" yang menunggu validasi PM, diurutkan berdasarkan waktu submit.</p>
+    </div>
+  </div>
+
+  <h4>Dashboard Surveyor — Mobile PWA</h4>
+  <ul>
+    <li><strong>Ringkasan Hari Ini:</strong> Berapa titik yang sudah selesai vs target hari ini</li>
+    <li><strong>Daftar Titik Saya:</strong> Titik yang di-assign ke surveyor ini, difilter berdasarkan status</li>
+    <li><strong>Notifikasi Terbaru:</strong> Assignment baru, hasil approval, permintaan retake dari PM</li>
+    <li><strong>Status Sinkronisasi:</strong> Indikator data offline yang belum tersinkronisasi</li>
+  </ul>
+
+  <h2>3.3 Manajemen Target &amp; Penugasan Titik</h2>
+  <div class="two-col">
+    <div>
+      <h4>Manajemen Master Data Titik (PM)</h4>
+      <ul>
+        <li>Import 200 titik dari file CSV/Excel sekaligus</li>
+        <li>Tambah titik manual (kode, tipe GCP/ICP, koordinat target)</li>
+        <li>Edit atau hapus titik (hanya bila status Unassigned)</li>
+        <li>Lihat semua titik dalam list &amp; peta</li>
+      </ul>
+    </div>
+    <div>
+      <h4>Sistem Penugasan (Assignment)</h4>
+      <ul>
+        <li>PM memilih satu atau beberapa titik sekaligus</li>
+        <li>Assign ke surveyor tertentu + tentukan tanggal rencana</li>
+        <li>Surveyor otomatis mendapat notifikasi assignment</li>
+        <li>PM bisa reassign titik ke surveyor lain</li>
+        <li>Riwayat penugasan tersimpan di audit log</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="page-footer">
+    <span>GeoTrack Cikelet App · PRD v2.0 · KONFIDENSIAL</span>
+    <span>Halaman 5</span>
+  </div>
+</div>
+
+<!-- ================================================================ -->
+<!-- SECTION 3.4 — 3.7 FORM & PETA                                    -->
+<!-- ================================================================ -->
+<div class="page">
+  <div class="page-header">
+    <div class="page-header-left">
+      <span class="page-header-num">03</span>
+      <span class="page-header-title">Form Input Lapangan &amp; Peta</span>
+    </div>
+    <span class="page-header-logo">GeoTrack Cikelet PRD v2.0</span>
+  </div>
+
+  <h2>3.4 Spesifikasi Form Input Lapangan (Mobile-First)</h2>
+  <div class="section-intro">
+    Form dirancang responsif &amp; mobile-first untuk kemudahan akses surveyor via smartphone langsung di lokasi patok atau premark. Mengutamakan tap targets besar, input minimal, dan auto-fill data.
+  </div>
+
+  <div class="two-col">
+    <div>
+      <h4>📋 Bagian A — Metadata Titik</h4>
+      <ul>
+        <li><strong>Kode Titik:</strong> Dropdown dinamis dari DB target (GCP-001 s/d ICP-200)</li>
+        <li><strong>Tipe Titik:</strong> Auto-fill dari kode (GCP / ICP)</li>
+        <li><strong>Operator Rover:</strong> Auto-fill dari akun login surveyor</li>
+        <li><strong>Tanggal Pengukuran:</strong> Auto-fill hari ini, bisa diubah</li>
+        <li><strong>Waktu Mulai Sesi:</strong> Input manual atau tap "Mulai Sekarang"</li>
+        <li><strong>Waktu Selesai Sesi:</strong> Input manual atau tap "Selesai"</li>
+      </ul>
+    </div>
+    <div>
+      <h4>📡 Bagian B — Kondisi Teknis</h4>
+      <ul>
+        <li><strong>Tinggi Antena:</strong> Numerik presisi 3 desimal (misal: 1.732 m)</li>
+        <li><strong>Kondisi Sekitar:</strong> Pilih satu: Terbuka / Tajuk Ringan / Tajuk Rapat</li>
+        <li><strong>Cuaca:</strong> Pilih: Cerah / Berawan / Hujan</li>
+        <li><strong>Merk &amp; Tipe Receiver:</strong> Dropdown atau input manual</li>
+        <li><strong>Catatan Tambahan:</strong> Textarea opsional untuk keterangan lapangan</li>
+      </ul>
+    </div>
+  </div>
+
+  <h4>📁 Bagian C — Upload Dokumentasi</h4>
+  <ul>
+    <li><strong>File RINEX:</strong> Upload file hasil observasi statis (.zip, .obs, .nav, maks. 50 MB)</li>
+    <li><strong>4 Foto Mata Angin:</strong> Wajib semua diisi sebelum submit (lihat detail di Seksi 3.5)</li>
+  </ul>
+
+  <div class="alert alert-warning">
+    <span class="alert-icon">⚠️</span>
+    <div class="alert-content">
+      <div class="alert-title">Aturan Validasi Submit</div>
+      <div class="alert-text">Form tidak dapat dikirim (submit) ke server sebelum: (1) keempat foto mata arah angin berhasil diupload, (2) file RINEX/koordinat dasar berhasil diunggah, dan (3) semua field mandatory (bintang merah) terisi lengkap.</div>
+    </div>
+  </div>
+
+  <h2>3.5 Upload 4 Foto Mata Angin &amp; Validasi EXIF</h2>
+  <div class="feature-grid">
+    <div class="feature-card">
+      <div class="feature-card-header"><div class="feature-icon icon-blue">⬆️</div><div class="feature-card-title">Slot 1 — Foto Utara</div></div>
+      <p>Menampilkan ruang tumbuh, batas langit, dan rintangan tajuk di sisi Utara patok pengukuran.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-card-header"><div class="feature-icon icon-green">⬇️</div><div class="feature-card-title">Slot 2 — Foto Selatan</div></div>
+      <p>Menampilkan ruang tumbuh, batas langit, dan rintangan tajuk di sisi Selatan patok pengukuran.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-card-header"><div class="feature-icon icon-yellow">➡️</div><div class="feature-card-title">Slot 3 — Foto Timur</div></div>
+      <p>Menampilkan ruang tumbuh, batas langit, dan rintangan tajuk di sisi Timur patok pengukuran.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-card-header"><div class="feature-icon icon-red">⬅️</div><div class="feature-card-title">Slot 4 — Foto Barat</div></div>
+      <p>Menampilkan ruang tumbuh, batas langit, dan rintangan tajuk di sisi Barat patok pengukuran.</p>
+    </div>
+  </div>
+
+  <h4>🔍 Spesifikasi Validasi EXIF</h4>
+  <table>
+    <thead><tr><th>Validasi</th><th>Aturan</th><th>Aksi Jika Gagal</th></tr></thead>
+    <tbody>
+      <tr><td>GPS Koordinat</td><td>Foto harus memiliki tag GPS Latitude &amp; Longitude</td><td>Peringatan kuning, upload ditolak jika pilihan "Ketat"</td></tr>
+      <tr><td>Toleransi Jarak</td><td>Koordinat foto max 500m dari koordinat titik target</td><td>Warning PM, data ditandai dengan flag ⚠️</td></tr>
+      <tr><td>Timestamp Foto</td><td>Timestamp foto harus dalam rentang ±2 jam dari waktu sesi</td><td>Warning PM, surveyor diminta konfirmasi</td></tr>
+      <tr><td>Ukuran Gambar</td><td>Dikompresi otomatis ke maks. 1.5 MB tanpa merusak EXIF</td><td>Kompresi otomatis di client-side sebelum upload</td></tr>
+      <tr><td>Format File</td><td>Hanya menerima .jpg, .jpeg, .heic</td><td>Upload ditolak, tampilkan pesan error</td></tr>
+    </tbody>
+  </table>
+
+  <h2>3.6 Alur Detail Validasi &amp; Proses Retake</h2>
+  <div class="two-col">
+    <div>
+      <h4>Alur Approve (PM)</h4>
+      <ol>
+        <li>PM lihat daftar "Under Review"</li>
+        <li>Buka detail: cek foto, EXIF, data teknis</li>
+        <li>Jika valid → klik "Approve"</li>
+        <li>Status berubah ke "Approved"</li>
+        <li>Surveyor &amp; Client mendapat notifikasi</li>
+        <li>Data terkunci, tidak bisa diedit lagi</li>
+      </ol>
+    </div>
+    <div>
+      <h4>Alur Retake (PM)</h4>
+      <ol>
+        <li>PM lihat daftar "Under Review"</li>
+        <li>Buka detail, temukan masalah data</li>
+        <li>Isi form alasan retake (wajib)</li>
+        <li>Klik "Minta Retake"</li>
+        <li>Status kembali ke "In Progress"</li>
+        <li>Surveyor mendapat notifikasi + alasan PM</li>
+        <li>Foto lama disimpan sebagai histori retake</li>
+        <li>Counter retake bertambah (+1), maks 3x</li>
+      </ol>
+    </div>
+  </div>
+
+  <div class="page-footer">
+    <span>GeoTrack Cikelet App · PRD v2.0 · KONFIDENSIAL</span>
+    <span>Halaman 6</span>
+  </div>
+</div>
+
+<!-- ================================================================ -->
+<!-- SECTION 3.7 — 3.10 PETA, NOTIF, EKSPOR                          -->
+<!-- ================================================================ -->
+<div class="page">
+  <div class="page-header">
+    <div class="page-header-left">
+      <span class="page-header-num">03</span>
+      <span class="page-header-title">Peta, Notifikasi, Ekspor &amp; Audit Log</span>
+    </div>
+    <span class="page-header-logo">GeoTrack Cikelet PRD v2.0</span>
+  </div>
+
+  <h2>3.7 Tampilan Peta Interaktif (GIS Map View)</h2>
+  <div class="section-intro">
+    Peta interaktif menggunakan <strong>Leaflet.js + OpenStreetMap</strong> untuk visualisasi distribusi spasial dan status 200 titik GCP/ICP di wilayah Cikelet, Garut Selatan.
+  </div>
+  <div class="two-col">
+    <div>
+      <h4>Fitur Peta</h4>
+      <ul>
+        <li>Pin warna berdasarkan status titik (abu = unassigned, kuning = progress, biru = review, hijau = approved, merah = retake)</li>
+        <li>Klik pin → popup detail: kode titik, surveyor, status, foto thumbnail</li>
+        <li>Zoom in/out dan drag navigasi peta</li>
+        <li>Filter layer berdasarkan status, surveyor, atau tanggal</li>
+        <li>Tampilkan batas area proyek (polygon)</li>
+        <li>Toggle satelit / OpenStreetMap basemap</li>
+      </ul>
+    </div>
+    <div>
+      <h4>Kontrol Peta</h4>
+      <ul>
+        <li>Search titik berdasarkan kode</li>
+        <li>Cluster pin otomatis saat zoom jauh</li>
+        <li>Ekspor tampilan peta sebagai gambar PNG</li>
+        <li>Surveyor: lihat posisi GPS diri sendiri di peta</li>
+        <li>Jarak dari posisi ke titik target (navigasi)</li>
+        <li>Offline tile caching untuk area proyek</li>
+      </ul>
+    </div>
+  </div>
+
+  <h2>3.8 Sistem Notifikasi In-App</h2>
+  <table>
+    <thead><tr><th>Event</th><th>Penerima</th><th>Pesan Notifikasi</th></tr></thead>
+    <tbody>
+      <tr><td>Titik di-assign ke surveyor</td><td>Surveyor terkait</td><td>"Anda mendapat tugas baru: GCP-045 — Jadwal: 5 Juli 2026"</td></tr>
+      <tr><td>Surveyor submit form</td><td>PM (Super Admin)</td><td>"GCP-045 menunggu validasi Anda. Submit oleh: Ahmad"</td></tr>
+      <tr><td>PM Approve titik</td><td>Surveyor + Client</td><td>"GCP-045 telah DISETUJUI oleh Project Manager"</td></tr>
+      <tr><td>PM Request Retake</td><td>Surveyor terkait</td><td>"GCP-045 perlu DIULANG. Alasan: Foto blur, tajuk tidak terlihat"</td></tr>
+      <tr><td>Progres mencapai milestone</td><td>PM + Client</td><td>"🎉 50% titik telah diselesaikan! (100/200 Approved)"</td></tr>
+    </tbody>
+  </table>
+
+  <div class="alert alert-info">
+    <span class="alert-icon">💡</span>
+    <div class="alert-content">
+      <div class="alert-title">Mekanisme Pengiriman Notifikasi</div>
+      <div class="alert-text">Notifikasi in-app (bell icon) tersimpan di database. Untuk surveyor mobile: browser push notification (PWA). Email notifikasi opsional, dikonfigurasi per pengguna di pengaturan profil.</div>
+    </div>
+  </div>
+
+  <h2>3.9 Ekspor Laporan &amp; Download RINEX</h2>
+  <table>
+    <thead><tr><th>Format Ekspor</th><th>Konten</th><th>Akses</th></tr></thead>
+    <tbody>
+      <tr><td><strong>PDF Laporan Lengkap</strong></td><td>Rekap semua titik, foto 4 arah (thumbnail), data teknis, status, tanggal pengukuran, nama surveyor</td><td>PM + Client</td></tr>
+      <tr><td><strong>Excel/CSV Data</strong></td><td>Semua field dari tabel points_measurement, dapat difilter per status/tanggal/surveyor</td><td>PM</td></tr>
+      <tr><td><strong>Download RINEX per Titik</strong></td><td>File mentah hasil observasi GNSS statis untuk satu titik spesifik</td><td>PM + Client</td></tr>
+      <tr><td><strong>ZIP Bulk RINEX</strong></td><td>Download semua RINEX file sekaligus dalam satu arsip, dapat difilter per batch/tanggal</td><td>PM + Client</td></tr>
+      <tr><td><strong>Ekspor Peta PNG</strong></td><td>Snapshot tampilan peta dengan semua pin titik dan legenda status</td><td>PM</td></tr>
+    </tbody>
+  </table>
+
+  <h2>3.10 Audit Log &amp; Riwayat Aktivitas</h2>
+  <p>Setiap aksi penting dalam sistem dicatat otomatis untuk keperluan akuntabilitas, debugging, dan dispute resolution:</p>
+  <div class="two-col">
+    <div>
+      <h4>Event yang Dicatat</h4>
+      <ul>
+        <li>Login / Logout (dengan IP &amp; device info)</li>
+        <li>Create / Edit / Delete master titik</li>
+        <li>Assign / reassign titik ke surveyor</li>
+        <li>Submit form pengukuran</li>
+        <li>Approve / Retake oleh PM</li>
+        <li>Upload file (foto &amp; RINEX)</li>
+        <li>Download/Ekspor data</li>
+        <li>Create / Edit / Deactivate user</li>
+      </ul>
+    </div>
+    <div>
+      <h4>Data yang Tersimpan per Log</h4>
+      <ul>
+        <li><strong>Timestamp</strong> — Waktu kejadian (UTC+7)</li>
+        <li><strong>User ID &amp; Role</strong> — Siapa yang melakukan</li>
+        <li><strong>Action</strong> — Jenis aksi dilakukan</li>
+        <li><strong>Entity &amp; ID</strong> — Data yang terdampak</li>
+        <li><strong>Old Value → New Value</strong> — Perubahan status</li>
+        <li><strong>IP Address</strong> — Dari mana aksi dilakukan</li>
+        <li><strong>Notes</strong> — Catatan tambahan (untuk retake)</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="page-footer">
+    <span>GeoTrack Cikelet App · PRD v2.0 · KONFIDENSIAL</span>
+    <span>Halaman 7</span>
+  </div>
+</div>
+
+<!-- ================================================================ -->
+<!-- SECTION 4 — UI/UX MOBILE FIRST                                   -->
+<!-- ================================================================ -->
+<div class="page">
+  <div class="page-header">
+    <div class="page-header-left">
+      <span class="page-header-num">04</span>
+      <span class="page-header-title">Desain UI/UX — Surveyor Mobile-First</span>
+    </div>
+    <span class="page-header-logo">GeoTrack Cikelet PRD v2.0</span>
+  </div>
+
+  <h1><span class="sec-num">4.</span>Desain UI/UX — Surveyor Mobile-First</h1>
+
+  <h2>4.1 Prinsip Desain</h2>
+  <div class="three-col">
+    <div class="feature-card">
+      <div class="feature-card-header"><div class="feature-icon icon-blue">📱</div><div class="feature-card-title">Mobile-First</div></div>
+      <p>Semua komponen UI surveyor dirancang untuk layar 360–430px. Desktop hanya dioptimalkan untuk PM dan Client.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-card-header"><div class="feature-icon icon-green">⚡</div><div class="feature-card-title">Minimal Tap</div></div>
+      <p>Maksimal 3 tap untuk mencapai form input lapangan. Tap target minimum 44×44px sesuai accessibility guidelines.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-card-header"><div class="feature-icon icon-yellow">☁️</div><div class="feature-card-title">Offline-Ready</div></div>
+      <p>UI menampilkan indikator offline mode. Form tetap bisa diisi. Upload tertunda hingga koneksi tersedia.</p>
+    </div>
+  </div>
+
+  <h2>4.2 Struktur Bottom Navigation Surveyor (PWA Mobile)</h2>
+  <div class="section-intro">
+    Navigasi utama surveyor menggunakan <strong>Fixed Bottom Navigation Bar</strong> dengan 5 tab utama, mengikuti pola standar mobile UX (mirip Instagram/WhatsApp).
+  </div>
+
+  <table>
+    <thead><tr><th>Tab</th><th>Ikon</th><th>Label</th><th>Fungsi Utama</th></tr></thead>
+    <tbody>
+      <tr>
+        <td><strong>Tab 1</strong></td><td>🏠</td><td>Beranda</td>
+        <td>Ringkasan harian: progres hari ini, titik pending, notifikasi terbaru, status sync offline</td>
+      </tr>
+      <tr>
+        <td><strong>Tab 2</strong></td><td>📋</td><td>Tugas</td>
+        <td>Daftar titik yang di-assign ke surveyor ini. Filter: Semua / Belum / Sedang / Selesai. Tap untuk buka detail &amp; form.</td>
+      </tr>
+      <tr>
+        <td><strong>Tab 3 (FAB)</strong></td><td>➕</td><td>Input Baru</td>
+        <td>Floating Action Button tengah — shortcut langsung ke form input pengukuran baru. Paling sering digunakan.</td>
+      </tr>
+      <tr>
+        <td><strong>Tab 4</strong></td><td>🗺️</td><td>Peta</td>
+        <td>Peta titik-titik milik surveyor ini. Tampilkan posisi GPS saat ini vs lokasi target. Navigasi ke titik berikutnya.</td>
+      </tr>
+      <tr>
+        <td><strong>Tab 5</strong></td><td>👤</td><td>Profil</td>
+        <td>Info akun, statistik personal (total approved, retake), pengaturan notifikasi, tombol logout.</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h2>4.3 Halaman-Halaman Utama Surveyor</h2>
+
+  <h4>📱 Halaman Beranda (Home)</h4>
+  <ul>
+    <li><strong>Header:</strong> Salam + nama surveyor, tanggal hari ini, badge status online/offline</li>
+    <li><strong>Progress Ring:</strong> Visual donut chart progres titik hari ini vs target</li>
+    <li><strong>Quick Stats:</strong> Total titik saya — Selesai / Dalam Proses / Retake</li>
+    <li><strong>Notifikasi Card:</strong> 3 notifikasi terbaru, tap untuk lihat semua</li>
+    <li><strong>Titik Berikutnya:</strong> Card titik yang dijadwalkan hari ini, tombol "Mulai Ukur"</li>
+  </ul>
+
+  <h4>📋 Halaman Daftar Tugas</h4>
+  <ul>
+    <li>List card per titik: kode, tipe (GCP/ICP), tanggal jadwal, status badge berwarna</li>
+    <li>Chip filter: Semua | Belum Mulai | Sedang Berjalan | Under Review | Approved | Retake</li>
+    <li>Search bar untuk cari kode titik</li>
+    <li>Pull-to-refresh untuk sinkronisasi data terbaru</li>
+    <li>Swipe kiri untuk aksi cepat (Mulai / Lihat Detail)</li>
+  </ul>
+
+  <h4>📝 Halaman Form Input Pengukuran</h4>
+  <ul>
+    <li>Stepper 3 langkah: <strong>① Data Titik</strong> → <strong>② Kondisi Teknis</strong> → <strong>③ Upload Dokumentasi</strong></li>
+    <li>Progress bar antar langkah untuk panduan visual</li>
+    <li>Validasi real-time per field (merah jika invalid, hijau jika valid)</li>
+    <li>Tombol kamera terintegrasi untuk foto langsung dari app</li>
+    <li>Preview thumbnail foto sebelum konfirmasi upload</li>
+    <li>Tombol "Simpan Draft" untuk lanjut nanti</li>
+    <li>Tombol "Submit" aktif hanya jika semua data valid</li>
+  </ul>
+
+  <h4>⚙️ Design System</h4>
+  <div class="two-col">
+    <div>
+      <h5>Tipografi</h5>
+      <ul>
+        <li><strong>Font Family:</strong> Inter (Google Fonts)</li>
+        <li>Heading: Inter 700, 600</li>
+        <li>Body: Inter 400, line-height 1.6</li>
+        <li>Mono (kode titik): JetBrains Mono</li>
+      </ul>
+    </div>
+    <div>
+      <h5>Warna Utama</h5>
+      <ul>
+        <li><strong>Primary:</strong> #1a56db (Biru)</li>
+        <li><strong>Success:</strong> #059669 (Hijau)</li>
+        <li><strong>Warning:</strong> #d97706 (Oranye)</li>
+        <li><strong>Danger:</strong> #dc2626 (Merah)</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="page-footer">
+    <span>GeoTrack Cikelet App · PRD v2.0 · KONFIDENSIAL</span>
+    <span>Halaman 8 &amp; 9</span>
+  </div>
+</div>
+
+<!-- ================================================================ -->
+<!-- SECTION 5 — NON-FUNCTIONAL                                       -->
+<!-- ================================================================ -->
+<div class="page">
+  <div class="page-header">
+    <div class="page-header-left">
+      <span class="page-header-num">05</span>
+      <span class="page-header-title">Kebutuhan Non-Fungsional</span>
+    </div>
+    <span class="page-header-logo">GeoTrack Cikelet PRD v2.0</span>
+  </div>
+
+  <h1><span class="sec-num">5.</span>Kebutuhan Non-Fungsional</h1>
+
+  <h2>5.1 Performa (Performance)</h2>
+  <table>
+    <thead><tr><th>Metrik</th><th>Target</th><th>Kondisi</th></tr></thead>
+    <tbody>
+      <tr><td>First Contentful Paint (FCP)</td><td>&lt; 1.5 detik</td><td>Koneksi 4G / WiFi</td></tr>
+      <tr><td>Time to Interactive (TTI)</td><td>&lt; 3 detik</td><td>Koneksi 4G / WiFi</td></tr>
+      <tr><td>API Response Time</td><td>&lt; 500ms (P95)</td><td>Server yang dioptimalkan</td></tr>
+      <tr><td>Upload Foto (1.5 MB)</td><td>&lt; 10 detik</td><td>Koneksi 4G minimum</td></tr>
+      <tr><td>Upload RINEX (50 MB)</td><td>&lt; 2 menit</td><td>Koneksi WiFi basecamp</td></tr>
+      <tr><td>Dashboard Load</td><td>&lt; 2 detik</td><td>Dengan caching aktif</td></tr>
+      <tr><td>Concurrent Users</td><td>Min. 50 user</td><td>Tanpa degradasi performa</td></tr>
+    </tbody>
+  </table>
+
+  <h2>5.2 Offline Capability (PWA)</h2>
+  <div class="alert alert-info">
+    <span class="alert-icon">📶</span>
+    <div class="alert-content">
+      <div class="alert-title">Strategi Offline-First untuk Surveyor</div>
+      <div class="alert-text">Aplikasi wajib berfungsi penuh tanpa koneksi internet untuk fitur-fitur kritikal surveyor. Data tersimpan di IndexedDB/localStorage dan disinkronkan secara antrian (FIFO queue) saat koneksi kembali tersedia.</div>
+    </div>
+  </div>
+  <div class="two-col">
+    <div>
+      <h4>Fitur yang Berjalan Offline</h4>
+      <ul>
+        <li>Lihat daftar titik yang di-assign (cached)</li>
+        <li>Buka dan isi form input pengukuran</li>
+        <li>Ambil foto &amp; simpan lokal</li>
+        <li>Simpan draft form ke IndexedDB</li>
+        <li>Lihat peta offline (tile ter-cache)</li>
+      </ul>
+    </div>
+    <div>
+      <h4>Perilaku Sinkronisasi</h4>
+      <ul>
+        <li>Auto-sync saat koneksi terdeteksi</li>
+        <li>Upload antrian (queue) FIFO</li>
+        <li>Conflict resolution: server menang</li>
+        <li>Notifikasi "Data berhasil disinkronkan"</li>
+        <li>Badge jumlah data offline di UI</li>
+      </ul>
+    </div>
+  </div>
+
+  <h2>5.3 Kompresi Gambar Otomatis</h2>
+  <ul>
+    <li>Foto dikompresi <strong>di sisi client (browser)</strong> sebelum upload menggunakan Canvas API atau library browser-image-compression</li>
+    <li>Target ukuran: <strong>maksimal 1.5 MB per foto</strong></li>
+    <li>EXIF metadata (GPS koordinat, timestamp) <strong>dipertahankan</strong> setelah kompresi</li>
+    <li>Resolusi minimum yang dapat diterima: <strong>1280×960 piksel</strong></li>
+    <li>Format output: JPEG (quality: 85%) atau WebP (quality: 80%)</li>
+  </ul>
+
+  <h2>5.4 Ketersediaan &amp; Reliabilitas</h2>
+  <div class="two-col">
+    <div>
+      <ul>
+        <li><strong>Uptime target:</strong> 99.5% per bulan</li>
+        <li><strong>Backup database:</strong> Harian otomatis, retensi 30 hari</li>
+        <li><strong>Backup file:</strong> Foto &amp; RINEX backup ke cloud storage</li>
+        <li><strong>Recovery Time Objective (RTO):</strong> &lt; 4 jam</li>
+      </ul>
+    </div>
+    <div>
+      <ul>
+        <li><strong>Maintenance window:</strong> Minggu, pukul 00:00–04:00 WIB</li>
+        <li><strong>Graceful degradation:</strong> Jika server down, PWA masih bisa digunakan offline</li>
+        <li><strong>Health check:</strong> Monitoring endpoint setiap 5 menit</li>
+      </ul>
+    </div>
+  </div>
+
+  <h2>5.5 Kompatibilitas Perangkat</h2>
+  <table>
+    <thead><tr><th>Platform</th><th>Target</th><th>Browser/OS</th></tr></thead>
+    <tbody>
+      <tr><td>Mobile (Surveyor — Prioritas)</td><td>Android 10+ &amp; iOS 14+</td><td>Chrome Mobile 90+ / Safari 14+</td></tr>
+      <tr><td>Desktop (PM &amp; Client)</td><td>Windows / Mac / Linux</td><td>Chrome 90+ / Firefox 88+ / Edge 90+</td></tr>
+      <tr><td>Tablet</td><td>Android / iPad</td><td>Mendukung responsive layout</td></tr>
+      <tr><td>Resolusi Minimum</td><td>360×640 px (mobile)</td><td>1280×768 px (desktop)</td></tr>
+    </tbody>
+  </table>
+
+  <div class="page-footer">
+    <span>GeoTrack Cikelet App · PRD v2.0 · KONFIDENSIAL</span>
+    <span>Halaman 10</span>
+  </div>
+</div>
+
+<!-- ================================================================ -->
+<!-- SECTION 6 — ARSITEKTUR TEKNIS                                    -->
+<!-- ================================================================ -->
+<div class="page">
+  <div class="page-header">
+    <div class="page-header-left">
+      <span class="page-header-num">06</span>
+      <span class="page-header-title">Arsitektur Teknis &amp; Tech Stack</span>
+    </div>
+    <span class="page-header-logo">GeoTrack Cikelet PRD v2.0</span>
+  </div>
+
+  <h1><span class="sec-num">6.</span>Arsitektur Teknis &amp; Tech Stack</h1>
+
+  <div class="section-intro">
+    Arsitektur mengikuti prinsip <strong>Modular Monolith</strong> dengan separasi yang jelas antar modul, siap di-scale ke microservices bila diperlukan. Setiap layer memiliki tanggung jawab tunggal (Single Responsibility).
+  </div>
+
+  <h2>6.1 Tech Stack Rekomendasi</h2>
+  <div class="arch-layer">
+    <div class="arch-layer-title">🖥️ Frontend — Web (PM &amp; Client)</div>
+    <div class="arch-items">
+      <span class="arch-item arch-item-primary">Next.js 14 (App Router)</span>
+      <span class="arch-item arch-item-primary">React 18</span>
+      <span class="arch-item">TypeScript</span>
+      <span class="arch-item">TailwindCSS</span>
+      <span class="arch-item arch-item-success">Recharts / Chart.js</span>
+      <span class="arch-item arch-item-success">Leaflet.js (Peta)</span>
+      <span class="arch-item">Zustand (State)</span>
+      <span class="arch-item">React Query</span>
+    </div>
+  </div>
+
+  <div class="arch-layer">
+    <div class="arch-layer-title">📱 Frontend — Mobile PWA (Surveyor)</div>
+    <div class="arch-items">
+      <span class="arch-item arch-item-primary">Next.js 14 (PWA)</span>
+      <span class="arch-item">next-pwa</span>
+      <span class="arch-item">Service Worker</span>
+      <span class="arch-item arch-item-success">IndexedDB (Dexie.js)</span>
+      <span class="arch-item">browser-image-compression</span>
+      <span class="arch-item">exifr (EXIF Reader)</span>
+      <span class="arch-item">Workbox (Offline)</span>
+    </div>
+  </div>
+
+  <div class="arch-layer">
+    <div class="arch-layer-title">⚙️ Backend — API Server</div>
+    <div class="arch-items">
+      <span class="arch-item arch-item-accent">Node.js + Express.js</span>
+      <span class="arch-item arch-item-accent">REST API</span>
+      <span class="arch-item">JWT Authentication</span>
+      <span class="arch-item">Multer (File Upload)</span>
+      <span class="arch-item">Sharp (Image Processing)</span>
+      <span class="arch-item">Nodemailer (Email)</span>
+      <span class="arch-item">Socket.io (Notifikasi)</span>
+    </div>
+  </div>
+
+  <div class="arch-layer">
+    <div class="arch-layer-title">🗄️ Database &amp; Storage</div>
+    <div class="arch-items">
+      <span class="arch-item arch-item-warning">MySQL 8.0 / PostgreSQL 15</span>
+      <span class="arch-item">Prisma ORM</span>
+      <span class="arch-item arch-item-success">MinIO / AWS S3 (File Storage)</span>
+      <span class="arch-item">Redis (Cache + Queue)</span>
+    </div>
+  </div>
+
+  <div class="arch-layer">
+    <div class="arch-layer-title">🚀 Infrastructure &amp; DevOps</div>
+    <div class="arch-items">
+      <span class="arch-item">Docker + Docker Compose</span>
+      <span class="arch-item">Nginx (Reverse Proxy)</span>
+      <span class="arch-item">VPS / Cloud (Ubuntu 22.04)</span>
+      <span class="arch-item">GitHub Actions (CI/CD)</span>
+      <span class="arch-item">PM2 (Process Manager)</span>
+      <span class="arch-item">Let's Encrypt (SSL)</span>
+    </div>
+  </div>
+
+  <h2>6.2 Struktur Modul Aplikasi (Modular)</h2>
+  <div class="code-block">
+<span class="code-comment">// Struktur Backend — Modular (1 folder = 1 domain)</span>
+src/
+├── modules/
+│   ├── <span class="code-keyword">auth/</span>         <span class="code-comment">← Login, JWT, refresh token</span>
+│   ├── <span class="code-keyword">users/</span>        <span class="code-comment">← CRUD user, role management</span>
+│   ├── <span class="code-keyword">points/</span>       <span class="code-comment">← Master data 200 titik GCP/ICP</span>
+│   ├── <span class="code-keyword">measurements/</span> <span class="code-comment">← Form input, status lifecycle</span>
+│   ├── <span class="code-keyword">uploads/</span>      <span class="code-comment">← Foto & RINEX file handling</span>
+│   ├── <span class="code-keyword">validations/</span>  <span class="code-comment">← Approve, retake, EXIF check</span>
+│   ├── <span class="code-keyword">dashboard/</span>    <span class="code-comment">← Aggregasi statistik & analytics</span>
+│   ├── <span class="code-keyword">notifications/</span><span class="code-comment">← Event-driven notification system</span>
+│   ├── <span class="code-keyword">exports/</span>      <span class="code-comment">← PDF, Excel, CSV, RINEX zip</span>
+│   └── <span class="code-keyword">audit/</span>        <span class="code-comment">← Activity log & history</span>
+├── middlewares/  <span class="code-comment">← Auth, RBAC, rate-limit, upload</span>
+├── utils/        <span class="code-comment">← Helpers, EXIF parser, compressor</span>
+└── config/       <span class="code-comment">← DB, storage, env variables</span>
+  </div>
+
+  <div class="alert alert-success">
+    <span class="alert-icon">✅</span>
+    <div class="alert-content">
+      <div class="alert-title">Prinsip Skalabilitas &amp; Maintainability</div>
+      <div class="alert-text">Setiap modul berdiri sendiri dengan controller, service, router, dan validator terpisah. Modul baru dapat ditambahkan tanpa memodifikasi modul yang sudah ada. State management terpisah per feature di frontend.</div>
+    </div>
+  </div>
+
+  <div class="page-footer">
+    <span>GeoTrack Cikelet App · PRD v2.0 · KONFIDENSIAL</span>
+    <span>Halaman 11</span>
+  </div>
+</div>
+
+<!-- ================================================================ -->
+<!-- SECTION 7 — DATABASE SCHEMA                                      -->
+<!-- ================================================================ -->
+<div class="page">
+  <div class="page-header">
+    <div class="page-header-left">
+      <span class="page-header-num">07</span>
+      <span class="page-header-title">Skema Database Lengkap</span>
+    </div>
+    <span class="page-header-logo">GeoTrack Cikelet PRD v2.0</span>
+  </div>
+
+  <h1><span class="sec-num">7.</span>Skema Database Lengkap</h1>
+
+  <div class="db-table">
+    <div class="db-table-header">👤 Tabel: users</div>
+    <div class="db-table-row"><span class="db-col-name">id <span class="db-pk">PK</span></span><span class="db-col-type">INT AUTO_INC</span><span class="db-col-desc">Identitas unik pengguna</span></div>
+    <div class="db-table-row"><span class="db-col-name">name <span class="db-nn">NN</span></span><span class="db-col-type">VARCHAR(100)</span><span class="db-col-desc">Nama lengkap pengguna</span></div>
+    <div class="db-table-row"><span class="db-col-name">email <span class="db-nn">NN</span></span><span class="db-col-type">VARCHAR(100) UNIQUE</span><span class="db-col-desc">Email untuk login, harus unik</span></div>
+    <div class="db-table-row"><span class="db-col-name">password_hash <span class="db-nn">NN</span></span><span class="db-col-type">VARCHAR(255)</span><span class="db-col-desc">Bcrypt hash password</span></div>
+    <div class="db-table-row"><span class="db-col-name">role <span class="db-nn">NN</span></span><span class="db-col-type">ENUM</span><span class="db-col-desc">'super_admin' | 'surveyor' | 'client'</span></div>
+    <div class="db-table-row"><span class="db-col-name">is_active</span><span class="db-col-type">BOOLEAN</span><span class="db-col-desc">Soft disable akun tanpa hapus data</span></div>
+    <div class="db-table-row"><span class="db-col-name">last_login</span><span class="db-col-type">DATETIME</span><span class="db-col-desc">Waktu login terakhir</span></div>
+    <div class="db-table-row"><span class="db-col-name">created_at / updated_at</span><span class="db-col-type">TIMESTAMP</span><span class="db-col-desc">Audit timestamps</span></div>
+  </div>
+
+  <div class="db-table">
+    <div class="db-table-header">📍 Tabel: target_points (Master 200 titik)</div>
+    <div class="db-table-row"><span class="db-col-name">id <span class="db-pk">PK</span></span><span class="db-col-type">INT AUTO_INC</span><span class="db-col-desc">Identitas unik titik</span></div>
+    <div class="db-table-row"><span class="db-col-name">point_code <span class="db-nn">NN</span></span><span class="db-col-type">VARCHAR(50) UNIQUE</span><span class="db-col-desc">Kode unik titik, contoh: 'GCP-001'</span></div>
+    <div class="db-table-row"><span class="db-col-name">point_type <span class="db-nn">NN</span></span><span class="db-col-type">ENUM</span><span class="db-col-desc">'GCP' | 'ICP'</span></div>
+    <div class="db-table-row"><span class="db-col-name">target_lat / target_lng</span><span class="db-col-type">DECIMAL(10,7)</span><span class="db-col-desc">Koordinat target (perkiraan lokasi)</span></div>
+    <div class="db-table-row"><span class="db-col-name">description</span><span class="db-col-type">TEXT</span><span class="db-col-desc">Deskripsi / keterangan lokasi titik</span></div>
+    <div class="db-table-row"><span class="db-col-name">created_at</span><span class="db-col-type">TIMESTAMP</span><span class="db-col-desc">Waktu titik ditambahkan ke sistem</span></div>
+  </div>
+
+  <div class="db-table">
+    <div class="db-table-header">📐 Tabel: measurements (Data Pengukuran Lapangan)</div>
+    <div class="db-table-row"><span class="db-col-name">id <span class="db-pk">PK</span></span><span class="db-col-type">INT AUTO_INC</span><span class="db-col-desc">Identitas unik pengukuran</span></div>
+    <div class="db-table-row"><span class="db-col-name">point_code <span class="db-fk">FK</span> <span class="db-nn">NN</span></span><span class="db-col-type">VARCHAR(50)</span><span class="db-col-desc">Referensi ke target_points.point_code</span></div>
+    <div class="db-table-row"><span class="db-col-name">surveyor_id <span class="db-fk">FK</span> <span class="db-nn">NN</span></span><span class="db-col-type">INT</span><span class="db-col-desc">Referensi ke users.id</span></div>
+    <div class="db-table-row"><span class="db-col-name">status <span class="db-nn">NN</span></span><span class="db-col-type">ENUM</span><span class="db-col-desc">'unassigned'|'progress'|'review'|'approved'|'retake'</span></div>
+    <div class="db-table-row"><span class="db-col-name">antenna_height <span class="db-nn">NN</span></span><span class="db-col-type">FLOAT(5,3)</span><span class="db-col-desc">Tinggi antena dalam meter (3 desimal)</span></div>
+    <div class="db-table-row"><span class="db-col-name">condition_sekitar</span><span class="db-col-type">ENUM</span><span class="db-col-desc">'terbuka' | 'tajuk_ringan' | 'tajuk_rapat'</span></div>
+    <div class="db-table-row"><span class="db-col-name">weather</span><span class="db-col-type">ENUM</span><span class="db-col-desc">'cerah' | 'berawan' | 'hujan'</span></div>
+    <div class="db-table-row"><span class="db-col-name">receiver_type</span><span class="db-col-type">VARCHAR(100)</span><span class="db-col-desc">Merk &amp; model receiver GNSS</span></div>
+    <div class="db-table-row"><span class="db-col-name">start_time / end_time</span><span class="db-col-type">DATETIME</span><span class="db-col-desc">Waktu mulai &amp; selesai sesi pengukuran</span></div>
+    <div class="db-table-row"><span class="db-col-name">photo_north/south/east/west_url</span><span class="db-col-type">VARCHAR(255)</span><span class="db-col-desc">URL foto 4 mata arah di storage</span></div>
+    <div class="db-table-row"><span class="db-col-name">photo_*_exif_lat/lng</span><span class="db-col-type">DECIMAL(10,7)</span><span class="db-col-desc">Koordinat GPS dari metadata EXIF foto</span></div>
+    <div class="db-table-row"><span class="db-col-name">photo_*_exif_timestamp</span><span class="db-col-type">DATETIME</span><span class="db-col-desc">Timestamp dari metadata EXIF foto</span></div>
+    <div class="db-table-row"><span class="db-col-name">rinex_file_url</span><span class="db-col-type">VARCHAR(255)</span><span class="db-col-desc">URL file RINEX/RAW data di storage</span></div>
+    <div class="db-table-row"><span class="db-col-name">field_notes</span><span class="db-col-type">TEXT</span><span class="db-col-desc">Catatan lapangan dari surveyor</span></div>
+    <div class="db-table-row"><span class="db-col-name">pm_notes</span><span class="db-col-type">TEXT</span><span class="db-col-desc">Catatan PM saat approve atau retake</span></div>
+    <div class="db-table-row"><span class="db-col-name">retake_count</span><span class="db-col-type">INT DEFAULT 0</span><span class="db-col-desc">Counter jumlah retake (maks 3)</span></div>
+    <div class="db-table-row"><span class="db-col-name">scheduled_date</span><span class="db-col-type">DATE</span><span class="db-col-desc">Tanggal rencana pengukuran</span></div>
+    <div class="db-table-row"><span class="db-col-name">created_at / updated_at</span><span class="db-col-type">TIMESTAMP</span><span class="db-col-desc">Audit timestamps otomatis</span></div>
+  </div>
+
+  <div class="two-col">
+    <div class="db-table">
+      <div class="db-table-header">🔔 Tabel: notifications</div>
+      <div class="db-table-row"><span class="db-col-name">id <span class="db-pk">PK</span></span><span class="db-col-type">INT</span><span class="db-col-desc">—</span></div>
+      <div class="db-table-row"><span class="db-col-name">user_id <span class="db-fk">FK</span></span><span class="db-col-type">INT</span><span class="db-col-desc">Penerima notifikasi</span></div>
+      <div class="db-table-row"><span class="db-col-name">type</span><span class="db-col-type">ENUM</span><span class="db-col-desc">submit|approved|retake|assigned</span></div>
+      <div class="db-table-row"><span class="db-col-name">message</span><span class="db-col-type">TEXT</span><span class="db-col-desc">Isi pesan notifikasi</span></div>
+      <div class="db-table-row"><span class="db-col-name">point_code</span><span class="db-col-type">VARCHAR(50)</span><span class="db-col-desc">Titik terkait</span></div>
+      <div class="db-table-row"><span class="db-col-name">is_read</span><span class="db-col-type">BOOLEAN</span><span class="db-col-desc">Status baca</span></div>
+      <div class="db-table-row"><span class="db-col-name">created_at</span><span class="db-col-type">TIMESTAMP</span><span class="db-col-desc">—</span></div>
+    </div>
+    <div class="db-table">
+      <div class="db-table-header">📜 Tabel: activity_logs</div>
+      <div class="db-table-row"><span class="db-col-name">id <span class="db-pk">PK</span></span><span class="db-col-type">INT</span><span class="db-col-desc">—</span></div>
+      <div class="db-table-row"><span class="db-col-name">user_id <span class="db-fk">FK</span></span><span class="db-col-type">INT</span><span class="db-col-desc">Aktor</span></div>
+      <div class="db-table-row"><span class="db-col-name">action</span><span class="db-col-type">VARCHAR(100)</span><span class="db-col-desc">Jenis aksi</span></div>
+      <div class="db-table-row"><span class="db-col-name">entity_type</span><span class="db-col-type">VARCHAR(50)</span><span class="db-col-desc">measurement|user|point</span></div>
+      <div class="db-table-row"><span class="db-col-name">entity_id</span><span class="db-col-type">INT</span><span class="db-col-desc">ID entitas terdampak</span></div>
+      <div class="db-table-row"><span class="db-col-name">old_value / new_value</span><span class="db-col-type">JSON</span><span class="db-col-desc">Nilai sebelum &amp; sesudah</span></div>
+      <div class="db-table-row"><span class="db-col-name">ip_address</span><span class="db-col-type">VARCHAR(45)</span><span class="db-col-desc">IP asal aksi</span></div>
+      <div class="db-table-row"><span class="db-col-name">created_at</span><span class="db-col-type">TIMESTAMP</span><span class="db-col-desc">—</span></div>
+    </div>
+  </div>
+
+  <div class="page-footer">
+    <span>GeoTrack Cikelet App · PRD v2.0 · KONFIDENSIAL</span>
+    <span>Halaman 12</span>
+  </div>
+</div>
+
+<!-- ================================================================ -->
+<!-- SECTION 8 — API SPEC                                             -->
+<!-- ================================================================ -->
+<div class="page">
+  <div class="page-header">
+    <div class="page-header-left">
+      <span class="page-header-num">08</span>
+      <span class="page-header-title">Spesifikasi API</span>
+    </div>
+    <span class="page-header-logo">GeoTrack Cikelet PRD v2.0</span>
+  </div>
+
+  <h1><span class="sec-num">8.</span>Spesifikasi API (REST)</h1>
+  <div class="section-intro">
+    Semua endpoint menggunakan prefix <strong>/api/v1/</strong>. Autentikasi via Bearer Token (JWT) di header Authorization. Response format: JSON. File upload menggunakan multipart/form-data.
+  </div>
+
+  <h2>8.1 Autentikasi</h2>
+  <table>
+    <thead><tr><th>Method</th><th>Endpoint</th><th>Deskripsi</th><th>Akses</th></tr></thead>
+    <tbody>
+      <tr><td><span class="api-method method-post">POST</span></td><td>/auth/login</td><td>Login user, return JWT tokens</td><td>Public</td></tr>
+      <tr><td><span class="api-method method-post">POST</span></td><td>/auth/refresh</td><td>Refresh access token</td><td>Authenticated</td></tr>
+      <tr><td><span class="api-method method-post">POST</span></td><td>/auth/logout</td><td>Invalidate refresh token</td><td>Authenticated</td></tr>
+      <tr><td><span class="api-method method-post">POST</span></td><td>/auth/forgot-password</td><td>Kirim email reset password</td><td>Public</td></tr>
+    </tbody>
+  </table>
+
+  <h2>8.2 Manajemen Pengguna</h2>
+  <table>
+    <thead><tr><th>Method</th><th>Endpoint</th><th>Deskripsi</th><th>Akses</th></tr></thead>
+    <tbody>
+      <tr><td><span class="api-method method-get">GET</span></td><td>/users</td><td>Daftar semua pengguna + filter role</td><td>Admin</td></tr>
+      <tr><td><span class="api-method method-post">POST</span></td><td>/users</td><td>Buat akun pengguna baru</td><td>Admin</td></tr>
+      <tr><td><span class="api-method method-put">PUT</span></td><td>/users/:id</td><td>Update data pengguna</td><td>Admin</td></tr>
+      <tr><td><span class="api-method method-patch">PATCH</span></td><td>/users/:id/toggle-active</td><td>Aktifkan / nonaktifkan akun</td><td>Admin</td></tr>
+    </tbody>
+  </table>
+
+  <h2>8.3 Target Titik &amp; Pengukuran</h2>
+  <table>
+    <thead><tr><th>Method</th><th>Endpoint</th><th>Deskripsi</th><th>Akses</th></tr></thead>
+    <tbody>
+      <tr><td><span class="api-method method-get">GET</span></td><td>/points</td><td>Semua titik target + status + filter</td><td>Semua</td></tr>
+      <tr><td><span class="api-method method-post">POST</span></td><td>/points</td><td>Tambah titik target baru</td><td>Admin</td></tr>
+      <tr><td><span class="api-method method-post">POST</span></td><td>/points/import</td><td>Bulk import dari CSV/Excel</td><td>Admin</td></tr>
+      <tr><td><span class="api-method method-post">POST</span></td><td>/points/:code/assign</td><td>Assign titik ke surveyor</td><td>Admin</td></tr>
+      <tr><td><span class="api-method method-get">GET</span></td><td>/measurements</td><td>Daftar semua data pengukuran</td><td>Admin, Client (filtered)</td></tr>
+      <tr><td><span class="api-method method-get">GET</span></td><td>/measurements/my</td><td>Data pengukuran milik surveyor login</td><td>Surveyor</td></tr>
+      <tr><td><span class="api-method method-post">POST</span></td><td>/measurements</td><td>Submit form pengukuran baru</td><td>Surveyor, Admin</td></tr>
+      <tr><td><span class="api-method method-put">PUT</span></td><td>/measurements/:id</td><td>Update data pengukuran (jika masih progress)</td><td>Surveyor, Admin</td></tr>
+      <tr><td><span class="api-method method-post">POST</span></td><td>/measurements/:id/approve</td><td>Approve pengukuran oleh PM</td><td>Admin</td></tr>
+      <tr><td><span class="api-method method-post">POST</span></td><td>/measurements/:id/retake</td><td>Request retake + catatan alasan</td><td>Admin</td></tr>
+    </tbody>
+  </table>
+
+  <h2>8.4 Upload File &amp; Dashboard</h2>
+  <table>
+    <thead><tr><th>Method</th><th>Endpoint</th><th>Deskripsi</th><th>Akses</th></tr></thead>
+    <tbody>
+      <tr><td><span class="api-method method-post">POST</span></td><td>/uploads/photo</td><td>Upload foto 1 arah, return URL + EXIF parsed</td><td>Surveyor, Admin</td></tr>
+      <tr><td><span class="api-method method-post">POST</span></td><td>/uploads/rinex</td><td>Upload file RINEX/RAW, return URL</td><td>Surveyor, Admin</td></tr>
+      <tr><td><span class="api-method method-get">GET</span></td><td>/dashboard/summary</td><td>Ringkasan statistik: total, per status, per surveyor</td><td>Admin, Client</td></tr>
+      <tr><td><span class="api-method method-get">GET</span></td><td>/dashboard/daily-progress</td><td>Data grafik progres harian per tanggal</td><td>Admin</td></tr>
+      <tr><td><span class="api-method method-get">GET</span></td><td>/notifications</td><td>Daftar notifikasi user login</td><td>Semua</td></tr>
+      <tr><td><span class="api-method method-patch">PATCH</span></td><td>/notifications/:id/read</td><td>Tandai notifikasi sebagai sudah dibaca</td><td>Semua</td></tr>
+      <tr><td><span class="api-method method-get">GET</span></td><td>/exports/excel</td><td>Download rekap data format Excel/CSV</td><td>Admin</td></tr>
+      <tr><td><span class="api-method method-get">GET</span></td><td>/exports/pdf</td><td>Generate &amp; download laporan PDF</td><td>Admin, Client</td></tr>
+      <tr><td><span class="api-method method-get">GET</span></td><td>/exports/rinex-bulk</td><td>Download ZIP semua file RINEX</td><td>Admin, Client</td></tr>
+    </tbody>
+  </table>
+
+  <div class="page-footer">
+    <span>GeoTrack Cikelet App · PRD v2.0 · KONFIDENSIAL</span>
+    <span>Halaman 13</span>
+  </div>
+</div>
+
+<!-- ================================================================ -->
+<!-- SECTION 9 — SECURITY                                             -->
+<!-- ================================================================ -->
+<div class="page">
+  <div class="page-header">
+    <div class="page-header-left">
+      <span class="page-header-num">09</span>
+      <span class="page-header-title">Keamanan (Security Requirements)</span>
+    </div>
+    <span class="page-header-logo">GeoTrack Cikelet PRD v2.0</span>
+  </div>
+
+  <h1><span class="sec-num">9.</span>Keamanan (Security Requirements)</h1>
+
+  <h2>9.1 Autentikasi &amp; Otorisasi</h2>
+  <table>
+    <thead><tr><th>Area</th><th>Implementasi</th></tr></thead>
+    <tbody>
+      <tr><td>Password Hashing</td><td>Bcrypt dengan salt rounds minimal 12</td></tr>
+      <tr><td>Token Management</td><td>JWT dengan secret key HS256/RS256, rotasi refresh token</td></tr>
+      <tr><td>RBAC Enforcement</td><td>Middleware validasi role di setiap endpoint sensitif</td></tr>
+      <tr><td>Brute Force Protection</td><td>Rate limiting 5 percobaan login / 15 menit per IP</td></tr>
+      <tr><td>Account Lockout</td><td>Auto-lock 30 menit setelah 10 gagal login berturut-turut</td></tr>
+    </tbody>
+  </table>
+
+  <h2>9.2 Keamanan Data &amp; Transport</h2>
+  <table>
+    <thead><tr><th>Area</th><th>Implementasi</th></tr></thead>
+    <tbody>
+      <tr><td>HTTPS</td><td>Wajib SSL/TLS di semua endpoint, redirect HTTP → HTTPS</td></tr>
+      <tr><td>CORS Policy</td><td>Whitelist domain yang diizinkan, reject origin asing</td></tr>
+      <tr><td>Input Validation</td><td>Sanitasi &amp; validasi semua input server-side (express-validator)</td></tr>
+      <tr><td>SQL Injection Prevention</td><td>Prisma ORM parameterized queries (tidak ada raw SQL)</td></tr>
+      <tr><td>XSS Prevention</td><td>Content Security Policy headers, DOMPurify di frontend</td></tr>
+      <tr><td>File Upload Security</td><td>Validasi MIME type, scan virus (optional), batas ukuran file</td></tr>
+      <tr><td>Storage Security</td><td>File disimpan dengan nama acak (UUID), bukan nama asli</td></tr>
+      <tr><td>Environment Variables</td><td>Semua secret key di .env, tidak di-commit ke repository</td></tr>
+    </tbody>
+  </table>
+
+  <h2>9.3 Validasi Integritas Data Lapangan</h2>
+  <div class="alert alert-danger">
+    <span class="alert-icon">🛡️</span>
+    <div class="alert-content">
+      <div class="alert-title">Anti-Kecurangan Data (Data Integrity)</div>
+      <div class="alert-text">Sistem harus mempersulit manipulasi data lapangan. Foto yang diupload harus langsung dari kamera, bukan screenshot atau gambar dari galeri lama.</div>
+    </div>
+  </div>
+  <ul>
+    <li><strong>EXIF GPS Check:</strong> Foto tanpa metadata GPS koordinat ditandai sebagai peringatan merah ke PM</li>
+    <li><strong>Geofence Validation:</strong> Koordinat EXIF foto harus dalam radius 500m dari titik target terdaftar</li>
+    <li><strong>Timestamp Validation:</strong> Timestamp EXIF foto harus dalam rentang waktu sesi pengukuran (±2 jam)</li>
+    <li><strong>Hash Verification:</strong> Checksum MD5/SHA256 file RINEX dicatat saat upload untuk verifikasi integritas</li>
+    <li><strong>Audit Trail:</strong> Setiap upload foto/RINEX mencatat IP, device, dan timestamp di activity log</li>
+  </ul>
+
+  <h2>9.4 Keamanan PWA (Mobile)</h2>
+  <ul>
+    <li>IndexedDB ter-encrypt menggunakan Web Crypto API untuk data sensitif yang di-cache offline</li>
+    <li>Service Worker hanya berjalan di HTTPS origin yang valid</li>
+    <li>Auto-clear cache IndexedDB saat logout pengguna</li>
+    <li>Token JWT tidak disimpan di localStorage (gunakan httpOnly Cookie atau memory)</li>
+  </ul>
+
+  <div class="page-footer">
+    <span>GeoTrack Cikelet App · PRD v2.0 · KONFIDENSIAL</span>
+    <span>Halaman 14</span>
+  </div>
+</div>
+
+<!-- ================================================================ -->
+<!-- SECTION 10 — ROADMAP                                             -->
+<!-- ================================================================ -->
+<div class="page">
+  <div class="page-header">
+    <div class="page-header-left">
+      <span class="page-header-num">10</span>
+      <span class="page-header-title">Roadmap Pengembangan</span>
+    </div>
+    <span class="page-header-logo">GeoTrack Cikelet PRD v2.0</span>
+  </div>
+
+  <h1><span class="sec-num">10.</span>Roadmap Pengembangan</h1>
+  <div class="section-intro">
+    Pengembangan dibagi menjadi 3 fase berurutan. Setiap fase menghasilkan deliverable yang dapat digunakan di lapangan, sehingga tim dapat segera merasakan manfaatnya tanpa menunggu sistem selesai sepenuhnya.
+  </div>
+
+  <div class="phase-card phase-1">
+    <div class="phase-num">1</div>
+    <div>
+      <div class="phase-title">Phase 1 — Core Foundation (Minggu 1–4)</div>
+      <div class="phase-sub">Target: Sistem dasar siap digunakan di lapangan</div>
+      <div class="phase-tags">
+        <span class="phase-tag">✅ Autentikasi (Login/Logout/JWT)</span>
+        <span class="phase-tag">✅ CRUD Pengguna (3 role)</span>
+        <span class="phase-tag">✅ Import Master 200 Titik</span>
+        <span class="phase-tag">✅ Assignment Titik ke Surveyor</span>
+        <span class="phase-tag">✅ Form Input Lapangan (Mobile PWA)</span>
+        <span class="phase-tag">✅ Bottom Navigation Surveyor</span>
+        <span class="phase-tag">✅ Upload 4 Foto + Validasi EXIF</span>
+        <span class="phase-tag">✅ Upload RINEX File</span>
+        <span class="phase-tag">✅ Workflow Approve / Retake</span>
+        <span class="phase-tag">✅ Dashboard Statistik Dasar</span>
+        <span class="phase-tag">✅ Offline Mode (IndexedDB)</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="phase-card phase-2">
+    <div class="phase-num">2</div>
+    <div>
+      <div class="phase-title">Phase 2 — Enhanced Features (Minggu 5–8)</div>
+      <div class="phase-sub">Target: Produktivitas dan monitoring lebih baik</div>
+      <div class="phase-tags">
+        <span class="phase-tag">🗺️ Peta Interaktif (Leaflet.js)</span>
+        <span class="phase-tag">🔔 Sistem Notifikasi In-App</span>
+        <span class="phase-tag">📊 Dashboard Analytics Lanjutan</span>
+        <span class="phase-tag">🔍 Fitur Pencarian &amp; Filter</span>
+        <span class="phase-tag">📤 Export Excel/CSV</span>
+        <span class="phase-tag">📄 Export PDF Laporan</span>
+        <span class="phase-tag">📦 Download RINEX Bulk ZIP</span>
+        <span class="phase-tag">📜 Audit Log &amp; Riwayat</span>
+        <span class="phase-tag">🔄 PWA Background Sync</span>
+        <span class="phase-tag">📱 Push Notification Mobile</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="phase-card phase-3">
+    <div class="phase-num">3</div>
+    <div>
+      <div class="phase-title">Phase 3 — Advanced &amp; Scale (Minggu 9–12)</div>
+      <div class="phase-sub">Target: Sistem production-ready, performa optimal</div>
+      <div class="phase-tags">
+        <span class="phase-tag">⚡ Optimasi Performa &amp; Caching</span>
+        <span class="phase-tag">🛡️ Penguatan Security (Audit, Pentest)</span>
+        <span class="phase-tag">🗺️ Offline Map Tile Caching</span>
+        <span class="phase-tag">📱 PWA Install Prompt</span>
+        <span class="phase-tag">📊 Laporan Analytics Lanjutan</span>
+        <span class="phase-tag">🔗 API Documentation (Swagger)</span>
+        <span class="phase-tag">🧪 Unit &amp; Integration Testing</span>
+        <span class="phase-tag">🚀 CI/CD Pipeline</span>
+        <span class="phase-tag">📈 Monitoring &amp; Alerting</span>
+        <span class="phase-tag">📚 User Manual &amp; Training</span>
+      </div>
+    </div>
+  </div>
+
+  <h2>10.1 Estimasi Sumber Daya</h2>
+  <table>
+    <thead><tr><th>Role</th><th>Jumlah</th><th>Fokus Utama</th></tr></thead>
+    <tbody>
+      <tr><td>Full-Stack Developer</td><td>1–2 orang</td><td>Frontend (Next.js) + Backend (Express.js)</td></tr>
+      <tr><td>UI/UX Designer</td><td>1 orang</td><td>Mobile-first wireframe, design system, prototype</td></tr>
+      <tr><td>DevOps / System Admin</td><td>Part-time</td><td>VPS setup, CI/CD, monitoring, SSL, backup</td></tr>
+      <tr><td>QA Tester</td><td>Part-time</td><td>UAT, pengujian offline mode, testing di lapangan</td></tr>
+    </tbody>
+  </table>
+
+  <h2>10.2 Kriteria Penerimaan (Acceptance Criteria)</h2>
+  <ul>
+    <li>✅ Semua 200 titik dapat diinput dan dikelola oleh PM</li>
+    <li>✅ Surveyor dapat mengisi form &amp; upload foto di lapangan tanpa error</li>
+    <li>✅ Aplikasi berfungsi offline minimal 24 jam di area tanpa internet</li>
+    <li>✅ EXIF koordinat foto terbaca dan tervalidasi otomatis</li>
+    <li>✅ PM dapat approve/retake dengan catatan alasan yang terkirim ke surveyor</li>
+    <li>✅ Client dapat lihat progres &amp; download RINEX file</li>
+    <li>✅ Dashboard menampilkan data real-time (refresh maks 30 detik)</li>
+    <li>✅ Laporan PDF dapat digenerate dan didownload</li>
+    <li>✅ Audit log mencatat semua aksi penting dengan benar</li>
+    <li>✅ Aplikasi berjalan smooth di Android Chrome (≥ 2 GB RAM)</li>
+  </ul>
+
+  <div class="divider"></div>
+
+  <div class="highlight-box">
+    <strong>📌 Catatan Akhir:</strong> Dokumen PRD v2.0 ini merupakan living document yang akan diperbarui seiring perkembangan proyek. Setiap perubahan besar pada requirement harus melalui proses review bersama Project Manager dan tim pengembang sebelum diimplementasikan. Versi terbaru selalu tersimpan di repositori proyek.
+  </div>
+
+  <div style="margin-top: 24px; text-align: center; color: var(--neutral-400); font-size: 9pt;">
+    <strong>GeoTrack Cikelet App — PRD v2.0</strong><br/>
+    Ditulis: 03 Juli 2026 · Penulis Asli: herdi pebryana · Revisi &amp; Enhancement: Tim GeoTrack<br/>
+    Dokumen ini bersifat KONFIDENSIAL dan hanya untuk keperluan internal pengembangan.
+  </div>
+
+  <div class="page-footer">
+    <span>GeoTrack Cikelet App · PRD v2.0 · KONFIDENSIAL</span>
+    <span>Halaman 15 — Selesai</span>
+  </div>
+</div>
+
+</body>
+</html>
