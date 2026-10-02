@@ -1,7 +1,7 @@
 'use client'
 // src/app/(surveyor)/input/page.tsx — Form Input Pengukuran (3-step stepper) + Simpan Draft
 
-import { useState, useRef, useEffect } from 'react'
+import { useState, useRef, useEffect, Suspense } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
@@ -30,7 +30,7 @@ interface DraftData {
   step: number
 }
 
-export default function InputPage() {
+function InputPageContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const qc = useQueryClient()
@@ -566,5 +566,13 @@ export default function InputPage() {
         </div>
       </div>
     </div>
+  )
+}
+
+export default function InputPage() {
+  return (
+    <Suspense fallback={<div className="flex h-[calc(100vh-100px)] items-center justify-center"><Loader2 className="w-8 h-8 animate-spin text-slate-300" /></div>}>
+      <InputPageContent />
+    </Suspense>
   )
 }
