@@ -21,15 +21,24 @@ export default function PMLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname()
   const [sidebarOpen, setSidebarOpen] = useState(false)
 
-  useEffect(() => {
-    if (!isAuthenticated) {
-      router.push('/login')
-    } else if (!isPM()) {
-      if (user?.role === 'surveyor') router.push('/home')
-      else router.push('/client')
-    }
-  }, [isAuthenticated, isPM, user, router])
+  const [mounted, setMounted] = useState(false)
 
+  useEffect(() => {
+    setMounted(true)
+  }, [])
+
+  useEffect(() => {
+    if (mounted) {
+      if (!isAuthenticated) {
+        router.push('/login')
+      } else if (!isPM()) {
+        if (user?.role === 'surveyor') router.push('/home')
+        else router.push('/client')
+      }
+    }
+  }, [mounted, isAuthenticated, isPM, user, router])
+
+  if (!mounted) return null
   if (!isAuthenticated || !isPM()) return null
 
   return (

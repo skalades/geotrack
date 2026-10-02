@@ -18,9 +18,19 @@ export function SurveyorShell({ children }: { children: React.ReactNode }) {
   const router = useRouter()
   const { isAuthenticated, isSurveyor } = useAuthStore()
 
+  const [mounted, setMounted] = useState(false)
+
   useEffect(() => {
-    if (!isAuthenticated) router.push('/login')
-  }, [isAuthenticated, router])
+    setMounted(true)
+  }, [])
+
+  useEffect(() => {
+    if (mounted && !isAuthenticated) {
+      router.push('/login')
+    }
+  }, [mounted, isAuthenticated, router])
+
+  if (!mounted) return null
 
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col max-w-md mx-auto">
