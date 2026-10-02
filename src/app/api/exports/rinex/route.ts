@@ -30,7 +30,7 @@ export const GET = withAuth(async (req, { user }) => {
       read() {}
     })
 
-    archive.on('data', chunk => {
+    archive.on('data', (chunk: Buffer) => {
       stream.push(chunk)
     })
     
@@ -38,7 +38,7 @@ export const GET = withAuth(async (req, { user }) => {
       stream.push(null)
     })
 
-    archive.on('error', err => {
+    archive.on('error', (err: Error) => {
       console.error('Archiver error:', err)
       stream.emit('error', err)
     })
