@@ -5,8 +5,7 @@ import { withAuth } from '@/lib/auth/middleware'
 export const POST = withAuth(async (req, context) => {
   try {
     const { params, user } = context
-    const resolvedParams = await params
-    const id = parseInt(resolvedParams.id)
+    const id = parseInt(String(params.id))
   const { pmNotes } = await req.json().catch(() => ({}))
   const measurement = await prisma.measurement.findUnique({ where: { id }, include: { surveyor: true } })
   if (!measurement) return NextResponse.json({ success: false, error: 'Pengukuran tidak ditemukan' }, { status: 404 })

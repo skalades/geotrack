@@ -6,11 +6,10 @@ import { retakeSchema } from '@/lib/validations'
 export const POST = withAuth(async (req, context) => {
   try {
     const { params, user } = context
-    const resolvedParams = await params
-    const id = parseInt(resolvedParams.id)
+    const id = parseInt(String(params.id))
   const body = await req.json()
   const parsed = retakeSchema.safeParse(body)
-  if (!parsed.success) return NextResponse.json({ success: false, error: parsed.error.errors[0].message }, { status: 400 })
+  if (!parsed.success) return NextResponse.json({ success: false, error: parsed.error.issues[0].message }, { status: 400 })
   const measurement = await prisma.measurement.findUnique({ where: { id } })
   if (!measurement) return NextResponse.json({ success: false, error: 'Pengukuran tidak ditemukan' }, { status: 404 })
   if (measurement.status !== 'review') return NextResponse.json({ success: false, error: 'Status harus Under Review untuk retake' }, { status: 400 })

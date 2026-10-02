@@ -158,7 +158,7 @@ export default function UsersManagementPage() {
                     <TableCell>
                       <Badge variant={
                         u.role === 'super_admin' ? 'purple' : 
-                        u.role === 'surveyor' ? 'primary' : 'gray'
+                        u.role === 'surveyor' ? 'primary' : 'default'
                       }>
                         {u.role === 'super_admin' ? 'PM' : u.role}
                       </Badge>

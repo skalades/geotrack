@@ -10,6 +10,7 @@ import apiClient from '@/lib/utils/api-client'
 import { Skeleton } from '@/components/ui/loading'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
 
 export default function ClientDashboardPage() {
   const { user, clearAuth } = useAuthStore()

@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import prisma from '@/lib/db/prisma'
 import { withAuth } from '@/lib/auth/middleware'
 // eslint-disable-next-line @typescript-eslint/no-require-imports
-const archiver = require('archiver') as typeof import('archiver')
+const createArchive = require('archiver') as (format: string, options?: object) => import('archiver').Archiver
 import fs from 'fs'
 import path from 'path'
 import { Readable } from 'stream'
@@ -21,7 +21,7 @@ export const GET = withAuth(async (req, { user }) => {
     const publicDir = path.join(process.cwd(), 'public')
     
     // Create an archiver instance
-    const archive = archiver('zip', {
+    const archive = createArchive('zip', {
       zlib: { level: 5 }
     })
 

@@ -170,7 +170,7 @@ export default function MeasurementsValidationPage() {
                         m.status === 'approved' ? 'success' :
                         m.status === 'retake' ? 'danger' :
                         m.status === 'progress' ? 'warning' :
-                        m.status === 'review' ? 'primary' : 'gray'
+                        m.status === 'review' ? 'primary' : 'default'
                       }>
                         {m.status.toUpperCase()}
                       </Badge>

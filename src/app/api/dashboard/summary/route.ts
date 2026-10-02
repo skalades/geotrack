@@ -3,18 +3,18 @@ import prisma from '@/lib/db/prisma'
 import { withAuth } from '@/lib/auth/middleware'
 
 export const GET = withAuth(async (req, { user }) => {
-  const where = user.role === 'surveyor' ? { surveyorId: user.userId } : {}
+  const where = user.role === 'surveyor' ? { surveyorId: String(user.userId) } : {}
   const [total, unassigned, progress, review, approved, retake] = await Promise.all([
     prisma.targetPoint.count(),
-    prisma.measurement.count({ where: { ...where, status: 'unassigned' } }),
-    prisma.measurement.count({ where: { ...where, status: 'progress' } }),
-    prisma.measurement.count({ where: { ...where, status: 'review' } }),
-    prisma.measurement.count({ where: { ...where, status: 'approved' } }),
-    prisma.measurement.count({ where: { ...where, status: 'retake' } }),
+    prisma.measurement.count({ where: { ...(where as any), status: 'unassigned' } }),
+    prisma.measurement.count({ where: { ...(where as any), status: 'progress' } }),
+    prisma.measurement.count({ where: { ...(where as any), status: 'review' } }),
+    prisma.measurement.count({ where: { ...(where as any), status: 'approved' } }),
+    prisma.measurement.count({ where: { ...(where as any), status: 'retake' } }),
   ])
   const progressPercent = total > 0 ? Math.round((approved / total) * 100) : 0
   // Per surveyor stats (PM only)
-  let surveyorStats = []
+  let surveyorStats: any[] = []
   if (user.role === 'super_admin') {
     const surveyors = await prisma.user.findMany({ where: { role: 'surveyor', isActive: true } })
     surveyorStats = await Promise.all(surveyors.map(async s => {

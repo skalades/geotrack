@@ -6,8 +6,7 @@ import proj4 from 'proj4'
 export const POST = withAuth(async (req, context) => {
   try {
     const { params, user } = context
-    const resolvedParams = await params
-    const id = parseInt(resolvedParams.id)
+    const id = parseInt(String(params.id))
 
     const body = await req.json()
     const { finalUtmX, finalUtmY, finalElevation, finalUtmZone, startTime, endTime, horizontalAccuracy, verticalAccuracy, antennaHeight } = body

@@ -1278,7 +1278,7 @@ export default function MasterPointsPage() {
                           status === 'approved' ? 'success' :
                           status === 'retake' ? 'danger' :
                           status === 'progress' ? 'warning' :
-                          status === 'review' ? 'primary' : 'gray'
+                          status === 'review' ? 'primary' : 'default'
                         }>
                           {status === 'unassigned' ? 'Unassigned'
                             : status === 'progress' ? 'In Progress'
