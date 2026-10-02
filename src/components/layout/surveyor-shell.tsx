@@ -3,7 +3,7 @@ import { usePathname, useRouter } from 'next/navigation'
 import { Home, ClipboardList, Plus, Map, User } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { useAuthStore } from '@/store/auth.store'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 
 const NAV_ITEMS = [
   { href: '/home', label: 'Beranda', icon: Home },
