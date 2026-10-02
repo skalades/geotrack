@@ -30,7 +30,7 @@ export const GET = withAuth(async (req, { user }) => {
 export const POST = withAuth(async (req, { user }) => {
   const body = await req.json()
   const parsed = measurementFormSchema.safeParse(body)
-  if (!parsed.success) return NextResponse.json({ success: false, error: parsed.error.errors[0].message }, { status: 400 })
+  if (!parsed.success) return NextResponse.json({ success: false, error: parsed.error.issues[0].message }, { status: 400 })
   const existing = await prisma.measurement.findUnique({ where: { pointCode: parsed.data.pointCode } })
   if (!existing) return NextResponse.json({ success: false, error: 'Titik belum di-assign' }, { status: 400 })
   if (existing.surveyorId !== user.userId && user.role !== 'super_admin') {

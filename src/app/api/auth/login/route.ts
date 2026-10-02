@@ -21,7 +21,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ success: false, error: 'Email atau password salah' }, { status: 401 })
     }
     await prisma.user.update({ where: { id: user.id }, data: { lastLogin: new Date() } })
-    const tokens = generateTokenPair(user.id as unknown as number, user.role as any, user.email)
+    const tokens = generateTokenPair(user.id, user.role as any, user.email)
     // Audit log
     const ip = req.headers.get('x-forwarded-for') ?? req.headers.get('x-real-ip') ?? 'unknown'
     await prisma.activityLog.create({

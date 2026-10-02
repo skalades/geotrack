@@ -52,26 +52,26 @@ export const assignPointSchema = z.object({
 export const measurementFormSchema = z.object({
   pointCode: z.string().min(1, 'Kode titik wajib dipilih'),
   antennaHeight: z
-    .number({ invalid_type_error: 'Tinggi antena harus angka' })
+    .number({ message: 'Tinggi antena harus angka' })
     .min(0.001, 'Tinggi antena minimal 0.001 m')
     .max(9.999, 'Tinggi antena maksimal 9.999 m'),
   conditionSekitar: z.enum(['terbuka', 'tajuk_ringan', 'tajuk_rapat'], {
-    errorMap: () => ({ message: 'Pilih kondisi sekitar' }),
+    message: 'Pilih kondisi sekitar'
   }),
   weather: z.enum(['cerah', 'berawan', 'hujan'], {
-    errorMap: () => ({ message: 'Pilih kondisi cuaca' }),
+    message: 'Pilih kondisi cuaca'
   }),
   receiverType: z.string().optional().nullable(),
   startTime: z.string().min(1, 'Waktu mulai wajib diisi'),
   endTime: z.string().min(1, 'Waktu selesai wajib diisi'),
   fieldNotes: z.string().max(1000).optional().nullable(),
   horizontalAccuracy: z
-    .number({ invalid_type_error: 'Akurasi horizontal harus angka' })
+    .number({ message: 'Akurasi horizontal harus angka' })
     .positive('Nilai harus positif')
     .optional()
     .nullable(),
   verticalAccuracy: z
-    .number({ invalid_type_error: 'Akurasi vertikal harus angka' })
+    .number({ message: 'Akurasi vertikal harus angka' })
     .positive('Nilai harus positif')
     .optional()
     .nullable(),

@@ -28,7 +28,7 @@ export interface TokenPair {
 }
 
 export interface JWTPayload {
-  userId: number
+  userId: string
   role: UserRole
   email: string
 }

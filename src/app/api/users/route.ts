@@ -18,7 +18,7 @@ export const GET = withAuth(async (req, { user }) => {
 export const POST = withAuth(async (req, { user }) => {
   const body = await req.json()
   const parsed = createUserSchema.safeParse(body)
-  if (!parsed.success) return NextResponse.json({ success: false, error: parsed.error.errors[0].message }, { status: 400 })
+  if (!parsed.success) return NextResponse.json({ success: false, error: parsed.error.issues[0].message }, { status: 400 })
   const { name, email, password, role } = parsed.data
   const existing = await prisma.user.findUnique({ where: { email } })
   if (existing) return NextResponse.json({ success: false, error: 'Email sudah terdaftar' }, { status: 409 })

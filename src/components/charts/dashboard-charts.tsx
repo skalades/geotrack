@@ -106,7 +106,6 @@ export function SurveyorBarChart({ data }: SurveyorChartProps) {
         <Tooltip
           contentStyle={{ borderRadius: '10px', border: '1px solid #e2e8f0', boxShadow: '0 4px 12px rgba(0,0,0,0.08)', fontSize: 12 }}
           labelStyle={{ fontWeight: 600, color: '#334155' }}
-          formatter={(value: any, name: string) => [value, name]}
         />
         <Legend
           iconType="square"

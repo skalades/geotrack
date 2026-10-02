@@ -167,4 +167,4 @@ export const POST = withAuth(async (req, context) => {
     console.error('[gcp-direct] error:', e)
     return NextResponse.json({ success: false, error: e.message }, { status: 500 })
   }
-}, ['super_admin', 'pm'])
+}, ['super_admin'])

@@ -48,7 +48,7 @@ export const PUT = withAuth(async (req, { params }) => {
     }
   })
   return NextResponse.json({ success: true, data: updated })
-}, ['super_admin', 'pm'])
+}, ['super_admin'])
 
 // DELETE: hapus titik — super_admin dapat hapus status apapun
 export const DELETE = withAuth(async (req, { params }) => {

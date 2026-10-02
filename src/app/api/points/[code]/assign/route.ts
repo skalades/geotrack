@@ -7,7 +7,7 @@ export const POST = withAuth(async (req, { params, user }) => {
   const { code } = params
   const body = await req.json()
   const parsed = assignPointSchema.safeParse(body)
-  if (!parsed.success) return NextResponse.json({ success: false, error: parsed.error.errors[0].message }, { status: 400 })
+  if (!parsed.success) return NextResponse.json({ success: false, error: parsed.error.issues[0].message }, { status: 400 })
   const { surveyorId, scheduledDate } = parsed.data
   const point = await prisma.targetPoint.findUnique({ where: { pointCode: code } })
   if (!point) return NextResponse.json({ success: false, error: 'Titik tidak ditemukan' }, { status: 404 })

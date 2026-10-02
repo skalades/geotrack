@@ -24,7 +24,7 @@ export function verifyRefreshToken(token: string): JWTPayload {
   return jwt.verify(token, REFRESH_SECRET) as JWTPayload
 }
 
-export function generateTokenPair(userId: number, role: UserRole, email: string) {
+export function generateTokenPair(userId: string, role: UserRole, email: string) {
   const payload: JWTPayload = { userId, role, email }
   return {
     accessToken: signAccessToken(payload),
