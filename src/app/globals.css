@@ -100,4 +100,16 @@
            shadow-lg shadow-blue-600/30 flex items-center justify-center
            transition-all duration-200 active:scale-95 hover:bg-blue-700;
   }
+
+  /* Strip Leaflet default tooltip chrome for area labels */
+  .area-label-tooltip {
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    padding: 0 !important;
+    color: inherit !important;
+  }
+  .area-label-tooltip::before {
+    display: none !important;
+  }
 }

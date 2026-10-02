@@ -21,14 +21,15 @@ export const POST = withAuth(async (req, context) => {
       photoEastUrl: body.photoEastUrl || measurement.photoEastUrl,
       photoWestUrl: body.photoWestUrl || measurement.photoWestUrl,
       rinexFileUrl: body.rinexFileUrl || measurement.rinexFileUrl,
+      horizontalAccuracy: body.horizontalAccuracy ?? measurement.horizontalAccuracy,
+      verticalAccuracy: body.verticalAccuracy ?? measurement.verticalAccuracy,
       status: 'review'
     }
 
     const hasAllPhotos = updatedData.photoNorthUrl && updatedData.photoSouthUrl && updatedData.photoEastUrl && updatedData.photoWestUrl
-    const hasRinex = updatedData.rinexFileUrl
     
-    if (!hasAllPhotos || !hasRinex) {
-      return NextResponse.json({ success: false, error: 'Lengkapi semua foto dan file RINEX sebelum submit' }, { status: 400 })
+    if (!hasAllPhotos) {
+      return NextResponse.json({ success: false, error: 'Lengkapi semua foto (4 arah) sebelum submit' }, { status: 400 })
     }
     
     const updated = await prisma.measurement.update({ where: { id }, data: updatedData })

@@ -199,14 +199,14 @@ export default function InputPage() {
   }
 
   const allPhotosUploaded = Object.values(photos).every(p => !!p.url)
-  const allReady = allPhotosUploaded && !!rinex.url
+  const allReady = allPhotosUploaded
 
   const onStepNext = async () => {
     if (step === 0) {
       const isValid = await trigger(['pointCode', 'startTime', 'endTime'])
       if (isValid) setStep(1)
     } else if (step === 1) {
-      const isValid = await trigger(['antennaHeight', 'conditionSekitar', 'weather', 'receiverType', 'fieldNotes'])
+      const isValid = await trigger(['antennaHeight', 'conditionSekitar', 'weather', 'receiverType', 'fieldNotes', 'horizontalAccuracy', 'verticalAccuracy'])
       if (isValid) {
         await saveMutation.mutateAsync(watch() as MeasurementFormInput)
         setStep(2)
@@ -224,7 +224,9 @@ export default function InputPage() {
       photoSouthUrl: photos.south.url,
       photoEastUrl: photos.east.url,
       photoWestUrl: photos.west.url,
-      rinexFileUrl: rinex.url
+      rinexFileUrl: rinex.url,
+      horizontalAccuracy: watch('horizontalAccuracy') ?? null,
+      verticalAccuracy: watch('verticalAccuracy') ?? null,
     }
 
     submitMutation.mutate({ id: m.id, payload })
@@ -366,6 +368,49 @@ export default function InputPage() {
                   className="w-full px-3 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500 text-base" />
                 {errors.antennaHeight && <p className="text-red-500 text-xs mt-1">{errors.antennaHeight.message}</p>}
               </div>
+
+              {/* Akurasi Horizontal & Vertikal */}
+              <div>
+                <label className="block text-sm font-medium text-slate-700 mb-1.5">
+                  Akurasi Pengukuran
+                  <span className="ml-1.5 text-xs text-slate-400 font-normal">(opsional)</span>
+                </label>
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <div className="flex items-center gap-1.5 mb-1">
+                      <span className="text-xs text-slate-500 font-medium">↔ Horizontal (m)</span>
+                    </div>
+                    <input
+                      type="number"
+                      step="0.001"
+                      min="0"
+                      placeholder="Cth: 0.025"
+                      {...register('horizontalAccuracy', { valueAsNumber: true })}
+                      className="w-full px-3 py-2.5 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+                    />
+                    {errors.horizontalAccuracy && (
+                      <p className="text-red-500 text-xs mt-1">{errors.horizontalAccuracy.message}</p>
+                    )}
+                  </div>
+                  <div>
+                    <div className="flex items-center gap-1.5 mb-1">
+                      <span className="text-xs text-slate-500 font-medium">↕ Vertikal (m)</span>
+                    </div>
+                    <input
+                      type="number"
+                      step="0.001"
+                      min="0"
+                      placeholder="Cth: 0.045"
+                      {...register('verticalAccuracy', { valueAsNumber: true })}
+                      className="w-full px-3 py-2.5 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+                    />
+                    {errors.verticalAccuracy && (
+                      <p className="text-red-500 text-xs mt-1">{errors.verticalAccuracy.message}</p>
+                    )}
+                  </div>
+                </div>
+                <p className="text-xs text-slate-400 mt-1.5">Nilai HRMS / VRMS dari receiver GPS dalam satuan meter.</p>
+              </div>
               <div>
                 <label className="block text-sm font-medium text-slate-700 mb-2">
                   Kondisi Sekitar <span className="text-red-500">*</span>
@@ -470,7 +515,7 @@ export default function InputPage() {
             </Card>
 
             <Card>
-              <h2 className="font-semibold text-slate-800 mb-3">📁 File RINEX <span className="text-red-500">*</span></h2>
+              <h2 className="font-semibold text-slate-800 mb-3">📁 File RINEX <span className="text-slate-400 text-xs font-normal">(opsional)</span></h2>
               <label className={`flex items-center gap-3 p-4 rounded-xl border-2 border-dashed cursor-pointer transition-all ${
                 rinex.url ? 'border-green-400 bg-green-50' : 'border-slate-300 hover:border-blue-400 hover:bg-blue-50'
               }`}>
@@ -514,7 +559,7 @@ export default function InputPage() {
             </div>
             {!allReady && (
               <p className="text-xs text-slate-500 text-center">
-                Lengkapi semua foto dan file RINEX untuk submit
+                Lengkapi semua foto (4 arah) untuk submit
               </p>
             )}
           </div>

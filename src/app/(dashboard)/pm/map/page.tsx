@@ -2,7 +2,7 @@
 import { useState, useMemo } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import dynamic from 'next/dynamic'
-import { MapPin, Filter, X, Trash2, Loader2 } from 'lucide-react'
+import { MapPin, Filter, X, Trash2, Loader2, Tag } from 'lucide-react'
 import apiClient from '@/lib/utils/api-client'
 import { Skeleton } from '@/components/ui/loading'
 import { STATUS_LABELS, STATUS_MAP_COLORS } from '@/lib/utils'
@@ -22,6 +22,7 @@ export default function PMMapPage() {
   const [filterStatus, setFilterStatus] = useState<string>('all')
   const [filterSurveyor, setFilterSurveyor] = useState<string>('all')
   const [isUploading, setIsUploading] = useState(false)
+  const [showLabels, setShowLabels] = useState(false)
   const queryClient = useQueryClient()
 
   // Fetch map layers
@@ -145,6 +146,19 @@ export default function PMMapPage() {
               disabled={isUploading}
             />
           </label>
+          {/* Toggle label titik */}
+          <button
+            onClick={() => setShowLabels(v => !v)}
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors border ${
+              showLabels
+                ? 'bg-indigo-600 text-white border-indigo-600 shadow-sm'
+                : 'bg-white text-slate-600 border-slate-200 hover:bg-slate-50'
+            }`}
+            title={showLabels ? 'Sembunyikan label titik' : 'Tampilkan label titik'}
+          >
+            <Tag className="w-3.5 h-3.5" />
+            Label
+          </button>
           {mapLayers.map((layer: any) => (
             <div key={layer.id} className="flex items-center gap-1 px-2 py-1.5 bg-slate-50 text-slate-700 rounded-lg text-xs font-medium border border-slate-200 mr-1">
               <span className="max-w-[100px] truncate" title={layer.name}>{layer.name}</span>
@@ -231,7 +245,7 @@ export default function PMMapPage() {
         {isLoading ? (
           <Skeleton className="w-full h-full rounded-none" />
         ) : (
-          <PMMapView points={filteredPoints} mapLayers={mapLayers} />
+          <PMMapView points={filteredPoints} mapLayers={mapLayers} showLabels={showLabels} />
         )}
       </div>
     </div>

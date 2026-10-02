@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { useParams, useRouter } from 'next/navigation'
-import { Printer, MapPin, Wrench, Edit3, Loader2 } from 'lucide-react'
+import { Printer, MapPin, Wrench, Edit3, Loader2, FileDown, CalendarDays, Clock } from 'lucide-react'
 import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
@@ -11,6 +11,8 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogC
 import { Input } from '@/components/ui/input'
 import apiClient from '@/lib/utils/api-client'
 import { useAuthStore } from '@/store/auth.store'
+import { usePdfGenerator } from '@/hooks/usePdfGenerator'
+import { PointReportTemplate } from '@/components/pdf/PointReportTemplate'
 import 'leaflet/dist/leaflet.css'
 
 import dynamic from 'next/dynamic'
@@ -18,6 +20,9 @@ const MapContainer = dynamic(() => import('react-leaflet').then(m => m.MapContai
 const TileLayer = dynamic(() => import('react-leaflet').then(m => m.TileLayer), { ssr: false })
 const Marker = dynamic(() => import('react-leaflet').then(m => m.Marker), { ssr: false })
 import L from 'leaflet'
+
+// Nama Project Manager tetap
+const PM_NAME = 'HERDI PEBRYANA'
 
 const defaultIcon = typeof window !== 'undefined' ? new L.Icon({
   iconUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png',
@@ -32,14 +37,23 @@ export default function PointDetailsPage() {
   const router = useRouter()
   const { user } = useAuthStore()
   const queryClient = useQueryClient()
+  const { ref: pdfRef, generating, generate } = usePdfGenerator(`GeoTrack-${pointCode}.pdf`)
   
   const [editModal, setEditModal] = useState(false)
-  const [formData, setFormData] = useState({ finalUtmX: '', finalUtmY: '', finalElevation: '', finalUtmZone: '48S' })
+  const [mapSnapshot, setMapSnapshot] = useState<string | undefined>()
+  const [formData, setFormData] = useState({
+    finalUtmX: '', finalUtmY: '', finalElevation: '', finalUtmZone: '48S',
+    startTime: '', endTime: '',
+    horizontalAccuracy: '', verticalAccuracy: '',
+    antennaHeight: '',
+    // Field khusus BM
+    observationDate: '',
+    observationDuration: '',
+  })
 
   const { data: measurement, isLoading } = useQuery({
     queryKey: ['measurement', pointCode],
     queryFn: async () => {
-      // Find the measurement with this pointCode
       const res = await apiClient.get('/measurements')
       const m = res.data.data.find((x: any) => x.pointCode === pointCode)
       if (!m) throw new Error('Data tidak ditemukan')
@@ -55,13 +69,34 @@ export default function PointDetailsPage() {
     }
   })
 
+  const isBM = measurement?.targetPoint?.pointType === 'BM'
+
   useEffect(() => {
     if (measurement) {
+      const toLocalDT = (d: any) => {
+        if (!d) return ''
+        const date = new Date(d)
+        if (isNaN(date.getTime())) return ''
+        const yyyy = date.getFullYear()
+        const mm = String(date.getMonth() + 1).padStart(2, '0')
+        const dd = String(date.getDate()).padStart(2, '0')
+        const hh = String(date.getHours()).padStart(2, '0')
+        const mins = String(date.getMinutes()).padStart(2, '0')
+        return `${yyyy}-${mm}-${dd}T${hh}:${mins}`
+      }
+
       setFormData({
         finalUtmX: measurement.finalUtmX?.toString() || '',
         finalUtmY: measurement.finalUtmY?.toString() || '',
         finalElevation: measurement.finalElevation?.toString() || '',
-        finalUtmZone: measurement.finalUtmZone || '48S'
+        finalUtmZone: measurement.finalUtmZone || '48S',
+        startTime: toLocalDT(measurement.startTime),
+        endTime: toLocalDT(measurement.endTime),
+        horizontalAccuracy: measurement.horizontalAccuracy?.toString() || '',
+        verticalAccuracy: measurement.verticalAccuracy?.toString() || '',
+        antennaHeight: measurement.antennaHeight?.toString() || '',
+        observationDate: measurement.observationDate || '',
+        observationDuration: '',
       })
     }
   }, [measurement])
@@ -81,6 +116,27 @@ export default function PointDetailsPage() {
   const lat = measurement.finalLat || measurement.targetPoint?.targetLat
   const lng = measurement.finalLng || measurement.targetPoint?.targetLng
 
+  /**
+   * Generate map snapshot (ESRI satellite tiles via proxy → canvas → data URL) then capture PDF.
+   * Doing this in two steps ensures the template re-renders with the map image
+   * before html-to-image captures it.
+   */
+  const handleDownloadPdf = async () => {
+    if (generating) return
+    try {
+      if (lat && lng) {
+        const { generateMapSnapshot } = await import('@/lib/utils/map-snapshot')
+        const snapshot = await generateMapSnapshot(lat, lng)
+        setMapSnapshot(snapshot)
+        // Give React enough time to re-render the template with the satellite map image
+        await new Promise(r => setTimeout(r, 500))
+      }
+    } catch (e) {
+      console.warn('Map snapshot failed, generating PDF without map:', e)
+    }
+    generate()
+  }
+
   const toDMS = (dd?: number, isLat?: boolean) => {
     if (typeof dd !== 'number') return '-'
     const dir = dd < 0 ? (isLat ? 'S' : 'W') : (isLat ? 'N' : 'E')
@@ -91,6 +147,20 @@ export default function PointDetailsPage() {
     return `${d}°${m}'${s}"${dir}`
   }
 
+  // Hitung durasi dari startTime/endTime
+  const calcDuration = () => {
+    if (!measurement.startTime || !measurement.endTime) return null
+    const mins = Math.round((new Date(measurement.endTime).getTime() - new Date(measurement.startTime).getTime()) / 60000)
+    return mins >= 60 ? `${Math.floor(mins/60)} jam ${mins%60} mnt` : `${mins} menit`
+  }
+
+  // Format tanggal pengamatan BM (dari observationDate atau startTime)
+  const formatObservationDate = () => {
+    const dateStr = measurement.observationDate || (measurement.startTime ? measurement.startTime.split('T')[0] : null)
+    if (!dateStr) return '-'
+    return new Date(dateStr).toLocaleDateString('id-ID', { day: '2-digit', month: 'long', year: 'numeric' })
+  }
+
   return (
     <div className="max-w-6xl mx-auto space-y-6 pb-20 print:p-0 print:m-0 print:max-w-none">
       
@@ -98,11 +168,20 @@ export default function PointDetailsPage() {
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 print:hidden border-b border-slate-200 pb-4">
         <div>
           <h1 className="text-2xl font-bold text-slate-800 uppercase">DESKRIPSI {measurement.targetPoint?.pointType || 'GCP'}</h1>
-          <p className="text-slate-500 font-medium">Ground Control Point Reference #{pointCode}</p>
+          <p className="text-slate-500 font-medium">
+            {isBM ? 'Bench Mark Reference' : 'Ground Control Point Reference'} #{pointCode}
+          </p>
         </div>
         <div className="flex items-center gap-3">
           <Button variant="outline" onClick={handlePrint} className="bg-white">
-            <Printer className="w-4 h-4 mr-2" /> Print Report
+            <Printer className="w-4 h-4 mr-2" /> Print
+          </Button>
+          <Button
+            onClick={handleDownloadPdf}
+            disabled={generating}
+            className="bg-blue-600 hover:bg-blue-700 text-white"
+          >
+            <FileDown className="w-4 h-4 mr-2" /> {generating ? 'Generating...' : 'Download PDF'}
           </Button>
           {user?.role === 'super_admin' && (
             <Button onClick={() => setEditModal(true)} className="bg-black text-white hover:bg-gray-800">
@@ -134,56 +213,91 @@ export default function PointDetailsPage() {
                   "{measurement.conditionSekitar || 'Tidak ada catatan lingkungan.'}"
                 </p>
               </div>
+              {/* Catatan lapangan — tampilkan jika ada */}
+              {measurement.fieldNotes && (
+                <div className="bg-slate-50 rounded-lg p-3 border border-slate-100">
+                  <p className="text-xs text-slate-500 font-medium mb-1">Catatan Lapangan</p>
+                  <p className="text-sm text-slate-700">{measurement.fieldNotes}</p>
+                </div>
+              )}
             </div>
           </Card>
 
-          {/* Alat Survey */}
+          {/* Alat Survey — tampilan berbeda untuk BM vs GCP/ICP */}
           <Card className="p-6 border border-slate-200 shadow-sm rounded-xl">
             <div className="flex items-center gap-2 mb-4">
               <Wrench className="w-5 h-5 text-blue-600" />
               <h3 className="font-semibold text-slate-800 text-sm">ALAT SURVEY</h3>
             </div>
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <p className="text-xs text-slate-500 font-medium mb-1">Tipe Unit</p>
-                <p className="text-sm font-semibold text-slate-800 uppercase">GNSS</p>
+
+            {isBM ? (
+              /* ── Tampilan khusus BM ── */
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <p className="text-xs text-slate-500 font-medium mb-1">Tipe Unit</p>
+                  <p className="text-sm font-semibold text-slate-800 uppercase">GNSS</p>
+                </div>
+                <div>
+                  <p className="text-xs text-slate-500 font-medium mb-1">Alat</p>
+                  <p className="text-sm font-semibold text-slate-800 uppercase">{measurement.receiverType || '-'}</p>
+                </div>
+
+                {/* Tanggal Pengamatan (bukan waktu jam) */}
+                <div className="col-span-2">
+                  <p className="text-xs text-slate-500 font-medium mb-1">
+                    <CalendarDays className="w-3 h-3 inline mr-1 text-slate-400" />
+                    Tanggal Pengamatan
+                  </p>
+                  <p className="text-sm font-semibold text-slate-800 uppercase">{formatObservationDate()}</p>
+                </div>
+
+                {/* Surveyor — tampilkan nama PM tanpa label jabatan */}
+                <div className="col-span-2">
+                  <p className="text-xs text-slate-500 font-medium mb-1">Surveyor</p>
+                  <p className="text-sm font-semibold text-slate-800 uppercase">{PM_NAME}</p>
+                </div>
+
               </div>
-              <div>
-                <p className="text-xs text-slate-500 font-medium mb-1">Alat</p>
-                <p className="text-sm font-semibold text-slate-800 uppercase">{measurement.receiverType || '-'}</p>
+            ) : (
+              /* ── Tampilan GCP / ICP (existing) ── */
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <p className="text-xs text-slate-500 font-medium mb-1">Tipe Unit</p>
+                  <p className="text-sm font-semibold text-slate-800 uppercase">GNSS</p>
+                </div>
+                <div>
+                  <p className="text-xs text-slate-500 font-medium mb-1">Alat</p>
+                  <p className="text-sm font-semibold text-slate-800 uppercase">{measurement.receiverType || '-'}</p>
+                </div>
+                <div>
+                  <p className="text-xs text-slate-500 font-medium mb-1">Waktu Akuisisi</p>
+                  <p className="text-sm font-semibold text-slate-800 uppercase">
+                    {measurement.startTime ? new Date(measurement.startTime).toLocaleDateString('id-ID', { day: '2-digit', month: 'long', year: 'numeric' }) : '-'}
+                  </p>
+                </div>
+                <div>
+                  <p className="text-xs text-slate-500 font-medium mb-1">Waktu Pengamatan</p>
+                  <p className="text-sm font-semibold text-slate-800 uppercase">
+                    {measurement.startTime ? new Date(measurement.startTime).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', hour12: false }) : '-'} - {measurement.endTime ? new Date(measurement.endTime).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', hour12: false }) : '-'}
+                  </p>
+                </div>
+                <div>
+                  <p className="text-xs text-slate-500 font-medium mb-1">Durasi Pengamatan</p>
+                  <p className="text-sm font-semibold text-slate-800 uppercase">
+                    {calcDuration() || '-'}
+                  </p>
+                </div>
+                <div>
+                  <p className="text-xs text-slate-500 font-medium mb-1">Surveyor</p>
+                  <p className="text-sm font-semibold text-slate-800 uppercase">{measurement.surveyor?.name || '-'}</p>
+                </div>
+                <div>
+                  <p className="text-xs text-slate-500 font-medium mb-1">Tinggi Antena</p>
+                  <p className="text-sm font-semibold text-slate-800 uppercase">{measurement.antennaHeight ? `${measurement.antennaHeight} m` : '-'}</p>
+                </div>
+
               </div>
-              <div>
-                <p className="text-xs text-slate-500 font-medium mb-1">Waktu Akuisisi</p>
-                <p className="text-sm font-semibold text-slate-800 uppercase">
-                  {measurement.startTime ? new Date(measurement.startTime).toLocaleDateString('id-ID', { day: '2-digit', month: 'long', year: 'numeric' }) : '-'}
-                </p>
-              </div>
-              <div>
-                <p className="text-xs text-slate-500 font-medium mb-1">Waktu Pengamatan</p>
-                <p className="text-sm font-semibold text-slate-800 uppercase">
-                  {measurement.startTime ? new Date(measurement.startTime).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }) : '-'} - {measurement.endTime ? new Date(measurement.endTime).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }) : '-'}
-                </p>
-              </div>
-              <div>
-                <p className="text-xs text-slate-500 font-medium mb-1">Durasi Pengamatan</p>
-                <p className="text-sm font-semibold text-slate-800 uppercase">
-                  {measurement.startTime && measurement.endTime 
-                    ? (() => {
-                        const mins = Math.round((new Date(measurement.endTime).getTime() - new Date(measurement.startTime).getTime()) / 60000)
-                        return mins >= 60 ? `${Math.floor(mins/60)} jam ${mins%60} mnt` : `${mins} menit`
-                      })()
-                    : '-'}
-                </p>
-              </div>
-              <div>
-                <p className="text-xs text-slate-500 font-medium mb-1">Surveyor</p>
-                <p className="text-sm font-semibold text-slate-800 uppercase">{measurement.surveyor?.name || '-'}</p>
-              </div>
-              <div>
-                <p className="text-xs text-slate-500 font-medium mb-1">Tinggi Antena</p>
-                <p className="text-sm font-semibold text-slate-800 uppercase">{measurement.antennaHeight ? `${measurement.antennaHeight} m` : '-'}</p>
-              </div>
-            </div>
+            )}
           </Card>
         </div>
 
@@ -221,6 +335,27 @@ export default function PointDetailsPage() {
                     <td className="px-6 py-4 text-slate-700 font-mono">{measurement.finalUtmY ? measurement.finalUtmY.toFixed(3) : '-'}</td>
                     <td className="px-6 py-4 text-slate-700 font-mono text-right">{measurement.finalElevation ? `${measurement.finalElevation.toFixed(3)} m` : '-'}</td>
                   </tr>
+                  {(measurement.horizontalAccuracy != null || measurement.verticalAccuracy != null) && (
+                    <tr className="bg-blue-50/40">
+                      <td className="px-6 py-3 font-bold text-blue-600 text-xs">AKURASI</td>
+                      <td className="px-6 py-3" colSpan={2}>
+                        <div className="flex items-center gap-4">
+                          <span className="text-xs text-slate-500">↔ Horizontal:</span>
+                          <span className="font-mono font-semibold text-sm text-blue-700">
+                            {measurement.horizontalAccuracy != null ? `${measurement.horizontalAccuracy.toFixed(3)} m` : '-'}
+                          </span>
+                          <span className="text-slate-300">|</span>
+                          <span className="text-xs text-slate-500">↕ Vertikal:</span>
+                          <span className="font-mono font-semibold text-sm text-blue-700">
+                            {measurement.verticalAccuracy != null ? `${measurement.verticalAccuracy.toFixed(3)} m` : '-'}
+                          </span>
+                        </div>
+                      </td>
+                      <td className="px-6 py-3 text-right">
+                        <span className="text-[10px] text-slate-400 uppercase tracking-wide">HRMS / VRMS</span>
+                      </td>
+                    </tr>
+                  )}
                 </tbody>
               </table>
             </div>
@@ -285,16 +420,19 @@ export default function PointDetailsPage() {
         </div>
       </Card>
 
-      {/* Edit Metadata Modal */}
+      {/* Edit Metadata Modal — konten berbeda untuk BM vs GCP/ICP */}
       <Dialog open={editModal} onOpenChange={setEditModal}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Edit Koordinat Final (Processed)</DialogTitle>
+            <DialogTitle>
+              Edit Metadata — {measurement.targetPoint?.pointType} {pointCode}
+            </DialogTitle>
           </DialogHeader>
           <form onSubmit={e => {
             e.preventDefault()
             updateMutation.mutate(formData)
           }} className="space-y-4">
+            {/* Koordinat — sama untuk semua tipe */}
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-1">
                 <label className="text-sm font-medium">UTM Easting (X)</label>
@@ -315,18 +453,110 @@ export default function PointDetailsPage() {
                   value={formData.finalUtmZone}
                   onChange={e => setFormData({ ...formData, finalUtmZone: e.target.value })}
                 >
-                  <option value="47N">47N</option>
-                  <option value="47S">47S</option>
-                  <option value="48N">48N</option>
-                  <option value="48S">48S</option>
-                  <option value="49N">49N</option>
-                  <option value="49S">49S</option>
-                  <option value="50N">50N</option>
-                  <option value="50S">50S</option>
-                  <option value="51N">51N</option>
-                  <option value="51S">51S</option>
+                  {['47N','47S','48N','48S','49N','49S','50N','50S','51N','51S'].map(z => (
+                    <option key={z} value={z}>{z}</option>
+                  ))}
                 </select>
               </div>
+            </div>
+
+            {isBM ? (
+              /* ── Form khusus BM: Tanggal + Durasi + Tinggi Antena ── */
+              <div className="border-t border-slate-100 pt-4 space-y-4">
+                <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide">Pengamatan BM</p>
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-1 col-span-2">
+                    <label className="text-sm font-medium flex items-center gap-1.5">
+                      <CalendarDays className="w-4 h-4 text-slate-400" /> Tanggal Pengamatan
+                    </label>
+                    <Input
+                      type="date"
+                      value={formData.observationDate}
+                      max={new Date().toISOString().split('T')[0]}
+                      onChange={e => setFormData({ ...formData, observationDate: e.target.value })}
+                    />
+                  </div>
+                  <div className="space-y-1">
+                    <label className="text-sm font-medium flex items-center gap-1.5">
+                      <Clock className="w-4 h-4 text-slate-400" /> Durasi Pengamatan
+                    </label>
+                    <Input
+                      placeholder="Contoh: 2 jam 30 menit"
+                      value={formData.observationDuration}
+                      onChange={e => setFormData({ ...formData, observationDuration: e.target.value })}
+                    />
+                  </div>
+                  <div className="space-y-1">
+                    <label className="text-sm font-medium">Tinggi Antena (m)</label>
+                    <Input
+                      type="number"
+                      step="0.001"
+                      min="0"
+                      placeholder="Cth: 1.850"
+                      value={formData.antennaHeight}
+                      onChange={e => setFormData({ ...formData, antennaHeight: e.target.value })}
+                    />
+                  </div>
+                </div>
+              </div>
+            ) : (
+              /* ── Form GCP/ICP: Waktu Mulai/Selesai + Tinggi Antena ── */
+              <div className="border-t border-slate-100 pt-4">
+                <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-3">Waktu Pengamatan</p>
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-1">
+                    <label className="text-sm font-medium">Waktu Mulai</label>
+                    <Input
+                      type="datetime-local"
+                      value={formData.startTime}
+                      onChange={e => setFormData({ ...formData, startTime: e.target.value })}
+                    />
+                  </div>
+                  <div className="space-y-1">
+                    <label className="text-sm font-medium">Waktu Selesai</label>
+                    <Input
+                      type="datetime-local"
+                      value={formData.endTime}
+                      onChange={e => setFormData({ ...formData, endTime: e.target.value })}
+                    />
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Akurasi — sama untuk semua tipe */}
+            <div className="border-t border-slate-100 pt-4">
+              <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-3">Akurasi Pengukuran</p>
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-1">
+                  <label className="text-sm font-medium">↔ Horizontal (m)</label>
+                  <Input
+                    type="number" step="0.001" min="0" placeholder="Cth: 0.025"
+                    value={formData.horizontalAccuracy}
+                    onChange={e => setFormData({ ...formData, horizontalAccuracy: e.target.value })}
+                  />
+                </div>
+                <div className="space-y-1">
+                  <label className="text-sm font-medium">↕ Vertikal (m)</label>
+                  <Input
+                    type="number" step="0.001" min="0" placeholder="Cth: 0.045"
+                    value={formData.verticalAccuracy}
+                    onChange={e => setFormData({ ...formData, verticalAccuracy: e.target.value })}
+                  />
+                </div>
+                {/* Tinggi Antena hanya di GCP/ICP (BM sudah ada di atas) */}
+                {!isBM && (
+                  <div className="space-y-1 col-span-2 mt-2">
+                    <label className="text-sm font-medium">Tinggi Antena (m)</label>
+                    <Input
+                      type="number" step="0.001" min="0" placeholder="Cth: 1.850"
+                      value={formData.antennaHeight}
+                      onChange={e => setFormData({ ...formData, antennaHeight: e.target.value })}
+                    />
+                  </div>
+                )}
+              </div>
+              <p className="text-xs text-slate-400 mt-1.5">Akurasi adalah Nilai HRMS / VRMS.</p>
             </div>
             
             <DialogFooter>
@@ -338,6 +568,11 @@ export default function PointDetailsPage() {
           </form>
         </DialogContent>
       </Dialog>
+
+      {/* Hidden PDF Template — off-screen, captured by html2canvas */}
+      <div style={{ position: 'fixed', top: '-9999px', left: '-9999px', zIndex: -1 }}>
+        <PointReportTemplate ref={pdfRef} measurement={measurement} mapSnapshot={mapSnapshot} />
+      </div>
     </div>
   )
 }

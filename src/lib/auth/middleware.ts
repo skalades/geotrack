@@ -12,7 +12,7 @@ export function withAuth(
   handler: (req: NextRequest, context: { params: Record<string, string>; user: JWTPayload }) => Promise<NextResponse>,
   allowedRoles?: UserRole[]
 ) {
-  return async (req: NextRequest, context: { params: Record<string, string> }) => {
+  return async (req: NextRequest, context: { params: Promise<Record<string, string>> | Record<string, string> }) => {
     try {
       const authHeader = req.headers.get('authorization')
       if (!authHeader?.startsWith('Bearer ')) {
@@ -26,7 +26,9 @@ export function withAuth(
         return NextResponse.json({ success: false, error: 'Forbidden: insufficient permissions' }, { status: 403 })
       }
 
-      return handler(req, { ...context, user })
+      // Next.js 15+: params is a Promise — await it before passing to handler
+      const resolvedParams = await Promise.resolve(context.params) as Record<string, string>
+      return handler(req, { params: resolvedParams, user })
     } catch {
       return NextResponse.json({ success: false, error: 'Invalid or expired token' }, { status: 401 })
     }

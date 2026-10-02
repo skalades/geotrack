@@ -2,21 +2,8 @@ import React from 'react'
 import { MapPin, Wrench } from 'lucide-react'
 import { Card } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
-import dynamic from 'next/dynamic'
-import 'leaflet/dist/leaflet.css'
-import L from 'leaflet'
 
-const MapContainer = dynamic(() => import('react-leaflet').then(m => m.MapContainer), { ssr: false })
-const TileLayer = dynamic(() => import('react-leaflet').then(m => m.TileLayer), { ssr: false })
-const Marker = dynamic(() => import('react-leaflet').then(m => m.Marker), { ssr: false })
-
-const defaultIcon = typeof window !== 'undefined' ? new L.Icon({
-  iconUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png',
-  iconRetinaUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png',
-  shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
-  iconSize: [25, 41],
-  iconAnchor: [12, 41]
-}) : null
+const PM_NAME = 'HERDI PEBRYANA'
 
 const toDMS = (dd?: number, isLat?: boolean) => {
   if (typeof dd !== 'number') return '-'
@@ -28,16 +15,32 @@ const toDMS = (dd?: number, isLat?: boolean) => {
   return `${d}°${m}'${s}"${dir}`
 }
 
+const calcDuration = (startTime: any, endTime: any) => {
+  if (!startTime || !endTime) return '-'
+  const mins = Math.round((new Date(endTime).getTime() - new Date(startTime).getTime()) / 60000)
+  return mins >= 60 ? `${Math.floor(mins/60)}j ${mins%60}m` : `${mins} mnt`
+}
+
+const formatObsDate = (observationDate: any, startTime: any) => {
+  const dateStr = observationDate || (startTime ? startTime.split('T')[0] : null)
+  if (!dateStr) return '-'
+  return new Date(dateStr).toLocaleDateString('id-ID', { day: '2-digit', month: 'long', year: 'numeric' })
+}
+
 interface PointReportTemplateProps {
   measurement: any
   id?: string
+  /** Pre-rendered map data URL (from generateMapSnapshot utility). If provided,
+   *  shown as a static image — avoids cross-origin canvas taint from live tile layers. */
+  mapSnapshot?: string
 }
 
-export const PointReportTemplate = React.forwardRef<HTMLDivElement, PointReportTemplateProps>(({ measurement, id }, ref) => {
+export const PointReportTemplate = React.forwardRef<HTMLDivElement, PointReportTemplateProps>(({ measurement, id, mapSnapshot }, ref) => {
   if (!measurement) return null
 
   const lat = measurement.finalLat || measurement.targetPoint?.targetLat
   const lng = measurement.finalLng || measurement.targetPoint?.targetLng
+  const isBM = measurement.targetPoint?.pointType === 'BM'
 
   return (
     <div 
@@ -49,7 +52,9 @@ export const PointReportTemplate = React.forwardRef<HTMLDivElement, PointReportT
       {/* Header */}
       <div className="border-b border-slate-200 pb-4 mb-6">
         <h1 className="text-2xl font-bold text-slate-800 uppercase">DESKRIPSI {measurement.targetPoint?.pointType || 'GCP'}</h1>
-        <p className="text-slate-500 font-medium">Ground Control Point Reference #{measurement.pointCode}</p>
+        <p className="text-slate-500 font-medium">
+          {isBM ? 'Bench Mark Reference' : 'Ground Control Point Reference'} #{measurement.pointCode}
+        </p>
       </div>
 
       <div className="grid grid-cols-3 gap-6 mb-6">
@@ -74,58 +79,87 @@ export const PointReportTemplate = React.forwardRef<HTMLDivElement, PointReportT
                   "{measurement.conditionSekitar || 'Tidak ada catatan lingkungan.'}"
                 </p>
               </div>
+              {measurement.fieldNotes && (
+                <div className="bg-slate-50 rounded-lg p-3 border border-slate-100">
+                  <p className="text-[10px] text-slate-500 font-medium mb-1">Catatan Lapangan</p>
+                  <p className="text-xs text-slate-700">{measurement.fieldNotes}</p>
+                </div>
+              )}
             </div>
           </Card>
 
-          {/* Alat Survey */}
+          {/* Alat Survey — berbeda untuk BM vs GCP/ICP */}
           <Card className="p-4 border border-slate-200 shadow-sm rounded-xl bg-white">
             <div className="flex items-center gap-2 mb-3">
               <Wrench className="w-4 h-4 text-blue-600" />
               <h3 className="font-semibold text-slate-800 text-xs">ALAT SURVEY</h3>
             </div>
-            <div className="grid grid-cols-2 gap-3">
-              <div>
-                <p className="text-[10px] text-slate-500 font-medium mb-0.5">Tipe Unit</p>
-                <p className="text-xs font-semibold text-slate-800 uppercase">GNSS</p>
+
+            {isBM ? (
+              /* ── BM: Tanggal Pengamatan, Durasi, Tinggi Antena, Surveyor = PM ── */
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <p className="text-[10px] text-slate-500 font-medium mb-0.5">Tipe Unit</p>
+                  <p className="text-xs font-semibold text-slate-800 uppercase">GNSS</p>
+                </div>
+                <div>
+                  <p className="text-[10px] text-slate-500 font-medium mb-0.5">Alat</p>
+                  <p className="text-xs font-semibold text-slate-800 uppercase">{measurement.receiverType || '-'}</p>
+                </div>
+                <div className="col-span-2">
+                  <p className="text-[10px] text-slate-500 font-medium mb-0.5">Tanggal Pengamatan</p>
+                  <p className="text-xs font-semibold text-slate-800 uppercase">
+                    {formatObsDate(measurement.observationDate, measurement.startTime)}
+                  </p>
+                </div>
+                <div className="col-span-2">
+                  <p className="text-[10px] text-slate-500 font-medium mb-0.5">Surveyor</p>
+                  <p className="text-xs font-semibold text-slate-800 uppercase">{PM_NAME}</p>
+                </div>
+
               </div>
-              <div>
-                <p className="text-[10px] text-slate-500 font-medium mb-0.5">Alat</p>
-                <p className="text-xs font-semibold text-slate-800 uppercase">{measurement.receiverType || '-'}</p>
+            ) : (
+              /* ── GCP / ICP: layout lama ── */
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <p className="text-[10px] text-slate-500 font-medium mb-0.5">Tipe Unit</p>
+                  <p className="text-xs font-semibold text-slate-800 uppercase">GNSS</p>
+                </div>
+                <div>
+                  <p className="text-[10px] text-slate-500 font-medium mb-0.5">Alat</p>
+                  <p className="text-xs font-semibold text-slate-800 uppercase">{measurement.receiverType || '-'}</p>
+                </div>
+                <div>
+                  <p className="text-[10px] text-slate-500 font-medium mb-0.5">Waktu Akuisisi</p>
+                  <p className="text-xs font-semibold text-slate-800 uppercase">
+                    {measurement.startTime ? new Date(measurement.startTime).toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' }) : '-'}
+                  </p>
+                </div>
+                <div>
+                  <p className="text-[10px] text-slate-500 font-medium mb-0.5">Waktu Pengamatan</p>
+                  <p className="text-xs font-semibold text-slate-800 uppercase">
+                    {measurement.startTime ? new Date(measurement.startTime).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', hour12: false }) : '-'} - {measurement.endTime ? new Date(measurement.endTime).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', hour12: false }) : '-'}
+                  </p>
+                </div>
+                <div>
+                  <p className="text-[10px] text-slate-500 font-medium mb-0.5">Durasi</p>
+                  <p className="text-xs font-semibold text-slate-800 uppercase">
+                    {calcDuration(measurement.startTime, measurement.endTime)}
+                  </p>
+                </div>
+                <div>
+                  <p className="text-[10px] text-slate-500 font-medium mb-0.5">Surveyor</p>
+                  <p className="text-xs font-semibold text-slate-800 uppercase">{measurement.surveyor?.name || '-'}</p>
+                </div>
+                <div>
+                  <p className="text-[10px] text-slate-500 font-medium mb-0.5">T. Antena</p>
+                  <p className="text-xs font-semibold text-slate-800 uppercase">{measurement.antennaHeight ? `${measurement.antennaHeight}m` : '-'}</p>
+                </div>
               </div>
-              <div>
-                <p className="text-[10px] text-slate-500 font-medium mb-0.5">Waktu Akuisisi</p>
-                <p className="text-xs font-semibold text-slate-800 uppercase">
-                  {measurement.startTime ? new Date(measurement.startTime).toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' }) : '-'}
-                </p>
-              </div>
-              <div>
-                <p className="text-[10px] text-slate-500 font-medium mb-0.5">Waktu Pengamatan</p>
-                <p className="text-xs font-semibold text-slate-800 uppercase">
-                  {measurement.startTime ? new Date(measurement.startTime).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }) : '-'} - {measurement.endTime ? new Date(measurement.endTime).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }) : '-'}
-                </p>
-              </div>
-              <div>
-                <p className="text-[10px] text-slate-500 font-medium mb-0.5">Durasi</p>
-                <p className="text-xs font-semibold text-slate-800 uppercase">
-                  {measurement.startTime && measurement.endTime 
-                    ? (() => {
-                        const mins = Math.round((new Date(measurement.endTime).getTime() - new Date(measurement.startTime).getTime()) / 60000)
-                        return mins >= 60 ? `${Math.floor(mins/60)}j ${mins%60}m` : `${mins} mnt`
-                      })()
-                    : '-'}
-                </p>
-              </div>
-              <div>
-                <p className="text-[10px] text-slate-500 font-medium mb-0.5">Surveyor</p>
-                <p className="text-xs font-semibold text-slate-800 uppercase">{measurement.surveyor?.name || '-'}</p>
-              </div>
-              <div>
-                <p className="text-[10px] text-slate-500 font-medium mb-0.5">T. Antena</p>
-                <p className="text-xs font-semibold text-slate-800 uppercase">{measurement.antennaHeight ? `${measurement.antennaHeight}m` : '-'}</p>
-              </div>
-            </div>
+            )}
           </Card>
         </div>
+
 
         {/* Right Column (Koordinat & Peta) */}
         <div className="col-span-2 space-y-6">
@@ -161,6 +195,19 @@ export const PointReportTemplate = React.forwardRef<HTMLDivElement, PointReportT
                     <td className="px-4 py-3 text-slate-700 font-mono">{measurement.finalUtmY ? measurement.finalUtmY.toFixed(3) : '-'}</td>
                     <td className="px-4 py-3 text-slate-700 font-mono text-right">{measurement.finalElevation ? `${measurement.finalElevation.toFixed(3)} m` : '-'}</td>
                   </tr>
+                  {(measurement.horizontalAccuracy != null || measurement.verticalAccuracy != null) && (
+                    <tr style={{ backgroundColor: '#eff6ff' }}>
+                      <td className="px-4 py-2 font-bold text-blue-600 text-[10px]">AKURASI</td>
+                      <td className="px-4 py-2" colSpan={2}>
+                        <span className="text-[10px] text-slate-500">↔ H: </span>
+                        <span className="font-mono font-semibold text-xs text-blue-700">{measurement.horizontalAccuracy != null ? `${Number(measurement.horizontalAccuracy).toFixed(3)} m` : '-'}</span>
+                        <span className="text-slate-300 mx-2">|</span>
+                        <span className="text-[10px] text-slate-500">↕ V: </span>
+                        <span className="font-mono font-semibold text-xs text-blue-700">{measurement.verticalAccuracy != null ? `${Number(measurement.verticalAccuracy).toFixed(3)} m` : '-'}</span>
+                      </td>
+                      <td className="px-4 py-2 text-right text-[9px] text-slate-400 uppercase">HRMS / VRMS</td>
+                    </tr>
+                  )}
                 </tbody>
               </table>
             </div>
@@ -175,17 +222,29 @@ export const PointReportTemplate = React.forwardRef<HTMLDivElement, PointReportT
                 <MapPin className="w-3 h-3 text-slate-400" />
                 <h3 className="font-semibold text-slate-700 text-xs">LOKASI {measurement.targetPoint?.pointType} (VISUAL CONTEXT)</h3>
               </div>
+              <span className="text-[9px] text-slate-400">© Esri, Maxar, Earthstar Geographics</span>
             </div>
-            <div className="h-48 w-full bg-slate-200 relative z-0">
-              {lat && lng && defaultIcon ? (
-                <MapContainer center={[lat, lng]} zoom={18} style={{ height: '100%', width: '100%' }} className="z-0" zoomControl={false} dragging={false} scrollWheelZoom={false} doubleClickZoom={false}>
-                  <TileLayer
-                    url="https://mt1.google.com/vt/lyrs=s&x={x}&y={y}&z={z}"
-                  />
-                  <Marker position={[lat, lng]} icon={defaultIcon} />
-                </MapContainer>
+            <div className="h-48 w-full bg-slate-100 relative overflow-hidden">
+              {mapSnapshot ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img
+                  src={mapSnapshot}
+                  alt="Map lokasi"
+                  className="w-full h-full object-cover"
+                />
+              ) : lat && lng ? (
+                /* Fallback: koordinat teks jika snapshot belum tersedia */
+                <div className="w-full h-full flex flex-col items-center justify-center gap-2 bg-slate-50">
+                  <MapPin className="w-5 h-5 text-slate-300" />
+                  <p className="text-xs font-mono text-slate-400">
+                    {typeof lat === 'number' ? lat.toFixed(6) : lat},{' '}
+                    {typeof lng === 'number' ? lng.toFixed(6) : lng}
+                  </p>
+                </div>
               ) : (
-                <div className="w-full h-full flex items-center justify-center text-slate-400 text-xs">Peta tidak tersedia</div>
+                <div className="w-full h-full flex items-center justify-center text-slate-400 text-xs">
+                  Peta tidak tersedia
+                </div>
               )}
             </div>
           </Card>

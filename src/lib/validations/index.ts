@@ -35,8 +35,8 @@ export const createTargetPointSchema = z.object({
   pointCode: z
     .string()
     .min(3, 'Kode titik minimal 3 karakter')
-    .regex(/^(GCP|ICP)-\d{3}$/, 'Format: GCP-001 atau ICP-001'),
-  pointType: z.enum(['GCP', 'ICP']),
+    .regex(/^(GCP|ICP|BM)-\d{3}$/, 'Format: GCP-001, ICP-001, atau BM-001'),
+  pointType: z.enum(['GCP', 'ICP', 'BM']),
   targetLat: z.number().min(-90).max(90).optional().nullable(),
   targetLng: z.number().min(-180).max(180).optional().nullable(),
   description: z.string().optional().nullable(),
@@ -65,6 +65,16 @@ export const measurementFormSchema = z.object({
   startTime: z.string().min(1, 'Waktu mulai wajib diisi'),
   endTime: z.string().min(1, 'Waktu selesai wajib diisi'),
   fieldNotes: z.string().max(1000).optional().nullable(),
+  horizontalAccuracy: z
+    .number({ invalid_type_error: 'Akurasi horizontal harus angka' })
+    .positive('Nilai harus positif')
+    .optional()
+    .nullable(),
+  verticalAccuracy: z
+    .number({ invalid_type_error: 'Akurasi vertikal harus angka' })
+    .positive('Nilai harus positif')
+    .optional()
+    .nullable(),
 })
 
 // ---- Approve / Retake ----

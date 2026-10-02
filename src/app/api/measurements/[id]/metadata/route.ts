@@ -10,7 +10,7 @@ export const POST = withAuth(async (req, context) => {
     const id = parseInt(resolvedParams.id)
 
     const body = await req.json()
-    const { finalUtmX, finalUtmY, finalElevation, finalUtmZone } = body
+    const { finalUtmX, finalUtmY, finalElevation, finalUtmZone, startTime, endTime, horizontalAccuracy, verticalAccuracy, antennaHeight } = body
 
     if (!finalUtmX || !finalUtmY || !finalUtmZone) {
       return NextResponse.json({ success: false, error: 'UTM X, Y, dan Zone harus diisi' }, { status: 400 })
@@ -39,7 +39,12 @@ export const POST = withAuth(async (req, context) => {
         finalElevation: finalElevation ? parseFloat(finalElevation) : null,
         finalUtmZone: finalUtmZone.toUpperCase(),
         finalLat,
-        finalLng
+        finalLng,
+        ...(startTime ? { startTime: new Date(startTime) } : {}),
+        ...(endTime   ? { endTime:   new Date(endTime)   } : {}),
+        ...(horizontalAccuracy !== undefined && horizontalAccuracy !== '' ? { horizontalAccuracy: parseFloat(horizontalAccuracy) } : {}),
+        ...(verticalAccuracy   !== undefined && verticalAccuracy   !== '' ? { verticalAccuracy:   parseFloat(verticalAccuracy)   } : {}),
+        ...(antennaHeight      !== undefined && antennaHeight      !== '' ? { antennaHeight:      parseFloat(antennaHeight)      } : {}),
       }
     })
 

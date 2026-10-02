@@ -25,7 +25,7 @@ export const GET = withAuth(async (req, { params }) => {
   return NextResponse.json({ success: true, data: point })
 })
 
-// PUT: edit titik (hanya jika unassigned)
+// PUT: edit titik (PM & super_admin — blokir hanya jika sudah approved)
 export const PUT = withAuth(async (req, { params }) => {
   const { code } = params
   const body = await req.json()
@@ -34,9 +34,9 @@ export const PUT = withAuth(async (req, { params }) => {
     include: { measurement: { select: { status: true } } }
   })
   if (!point) return NextResponse.json({ success: false, error: 'Titik tidak ditemukan' }, { status: 404 })
-  // Boleh edit jika: belum punya measurement atau status unassigned
-  if (point.measurement && point.measurement.status !== 'unassigned') {
-    return NextResponse.json({ success: false, error: 'Titik tidak dapat diedit karena sudah dalam proses pengukuran' }, { status: 400 })
+  // Blokir hanya jika sudah approved
+  if (point.measurement && point.measurement.status === 'approved') {
+    return NextResponse.json({ success: false, error: 'Titik tidak dapat diedit karena sudah berstatus Approved' }, { status: 400 })
   }
   const { pointType, targetLat, targetLng } = body
   const updated = await prisma.targetPoint.update({
@@ -48,23 +48,23 @@ export const PUT = withAuth(async (req, { params }) => {
     }
   })
   return NextResponse.json({ success: true, data: updated })
-}, ['super_admin'])
+}, ['super_admin', 'pm'])
 
-// DELETE: hapus titik (hanya jika unassigned)
+// DELETE: hapus titik — super_admin dapat hapus status apapun
 export const DELETE = withAuth(async (req, { params }) => {
   const { code } = params
   const point = await prisma.targetPoint.findUnique({
     where: { pointCode: code },
-    include: { measurement: { select: { status: true } } }
+    include: { measurement: { select: { id: true, status: true } } }
   })
   if (!point) return NextResponse.json({ success: false, error: 'Titik tidak ditemukan' }, { status: 404 })
-  if (point.measurement && point.measurement.status !== 'unassigned') {
-    return NextResponse.json({ success: false, error: 'Titik tidak dapat dihapus karena sudah dalam proses pengukuran' }, { status: 400 })
-  }
-  // Hapus measurement unassigned jika ada, lalu hapus point
+
+  // Cascade: hapus activity log & measurement terkait (semua status)
   if (point.measurement) {
+    await prisma.activityLog.deleteMany({ where: { entityType: 'measurement', entityId: point.measurement.id } })
     await prisma.measurement.deleteMany({ where: { pointCode: code } })
   }
+
   await prisma.targetPoint.delete({ where: { pointCode: code } })
   return NextResponse.json({ success: true, message: 'Titik berhasil dihapus' })
 }, ['super_admin'])

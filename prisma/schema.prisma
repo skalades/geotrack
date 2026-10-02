@@ -1,5 +1,6 @@
 generator client {
-  provider = "prisma-client-js"
+  provider      = "prisma-client-js"
+  binaryTargets = ["native", "debian-openssl-3.0.x"]
 }
 
 datasource db {
@@ -55,6 +56,7 @@ model Measurement {
   status           String    @default("unassigned") // unassigned, progress, review, approved, retake
   assignedAt       DateTime?
   scheduledDate    String?   // YYYY-MM-DD
+  observationDate  String?   // YYYY-MM-DD — tanggal aktual pengamatan (BM direct input)
   
   startTime        DateTime?
   endTime          DateTime?
@@ -63,6 +65,8 @@ model Measurement {
   weather          String?
   receiverType     String?
   fieldNotes       String?
+  horizontalAccuracy Float?  // Akurasi horizontal (m)
+  verticalAccuracy   Float?  // Akurasi vertikal (m)
   
   photoNorthUrl    String?
   photoSouthUrl    String?
