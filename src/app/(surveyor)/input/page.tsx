@@ -203,7 +203,7 @@ function InputPageContent() {
 
   const onStepNext = async () => {
     if (step === 0) {
-      const isValid = await trigger(['pointCode', 'startTime', 'endTime'])
+      const isValid = await trigger(['pointCode'])
       if (isValid) setStep(1)
     } else if (step === 1) {
       const isValid = await trigger(['antennaHeight', 'conditionSekitar', 'weather', 'receiverType', 'fieldNotes', 'horizontalAccuracy', 'verticalAccuracy'])
@@ -315,36 +315,6 @@ function InputPageContent() {
                   ))}
                 </select>
                 {errors.pointCode && <p className="text-red-500 text-xs mt-1">{errors.pointCode.message}</p>}
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1.5">Waktu Mulai Sesi <span className="text-red-500">*</span></label>
-                <div className="flex gap-2">
-                  <input type="datetime-local" {...register('startTime')}
-                    className="flex-1 px-3 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm" />
-                  <button
-                    type="button"
-                    onClick={() => setValue('startTime', new Date().toISOString().slice(0, 16) as any)}
-                    className="px-3 py-2 bg-blue-50 border border-blue-200 text-blue-700 rounded-xl text-xs font-semibold whitespace-nowrap"
-                  >
-                    Mulai Sekarang
-                  </button>
-                </div>
-                {errors.startTime && <p className="text-red-500 text-xs mt-1">{errors.startTime.message}</p>}
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1.5">Waktu Selesai Sesi <span className="text-red-500">*</span></label>
-                <div className="flex gap-2">
-                  <input type="datetime-local" {...register('endTime')}
-                    className="flex-1 px-3 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm" />
-                  <button
-                    type="button"
-                    onClick={() => setValue('endTime', new Date().toISOString().slice(0, 16) as any)}
-                    className="px-3 py-2 bg-slate-50 border border-slate-200 text-slate-700 rounded-xl text-xs font-semibold whitespace-nowrap"
-                  >
-                    Selesai
-                  </button>
-                </div>
-                {errors.endTime && <p className="text-red-500 text-xs mt-1">{errors.endTime.message}</p>}
               </div>
             </div>
             <Button type="button" onClick={onStepNext} fullWidth size="lg" className="mt-6">
