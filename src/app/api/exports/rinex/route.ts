@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 import prisma from '@/lib/db/prisma'
 import { withAuth } from '@/lib/auth/middleware'
-// eslint-disable-next-line @typescript-eslint/no-require-imports
-const createArchive = require('archiver') as (format: string, options?: object) => import('archiver').Archiver
+// eslint-disable-next-line @typescript-eslint/no-require-imports, @typescript-eslint/no-explicit-any
+const createArchive = require('archiver') as any
 import fs from 'fs'
 import path from 'path'
 import { Readable } from 'stream'
